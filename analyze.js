@@ -75,6 +75,31 @@ function analyze(games) {
     }
   }
 
+  // Results rating (KRACH-style): a win is worth more the better the team you
+  // beat, and everyone's value is solved together, so beating a team whose wins
+  // came against good teams counts most. An OT/SO game splits the credit. Each
+  // team also gets a virtual tie against an average team so unbeaten and winless
+  // records don't run off to infinity.
+  const results = []; // { team, opp, share } — share of a win, 0..1
+  for (const g of games) {
+    const homeWon = g.home.score > g.away.score;
+    const winShare = g.ot || g.so ? config.overtimeWinShare : 1;
+    results.push({ team: g.home.id, opp: g.away.id, share: homeWon ? winShare : 1 - winShare });
+    results.push({ team: g.away.id, opp: g.home.id, share: homeWon ? 1 - winShare : winShare });
+  }
+  const RP = config.resultsPriorGames;
+  const krach = Object.fromEntries(teamIds.map((id) => [id, 1]));
+  for (let it = 0; it < 300; it++) {
+    for (const id of teamIds) {
+      const mine = results.filter((r) => r.team === id);
+      const wins = sum(mine, (r) => r.share) + 0.5 * RP;
+      const denom = sum(mine, (r) => 1 / (krach[id] + krach[r.opp])) + RP / (krach[id] + 1);
+      krach[id] = wins / denom;
+    }
+    const gm = Math.exp(mean(teamIds.map((id) => Math.log(krach[id]))));
+    teamIds.forEach((id) => (krach[id] /= gm));
+  }
+
   const teamRows = teamIds.filter((id) => rec[id].gp > 0).map((id) => {
     const r = rec[id];
     const oppIds = sides.filter((s) => s.team === id).map((s) => s.opp);
@@ -86,15 +111,42 @@ function analyze(games) {
       net: mu * (off[id] - def[id]),
       shotsForRating: shotMu * soff[id],
       shotsAgainstRating: shotMu * sdef[id],
+      krach: krach[id], // >1 = results better than an average team's against this schedule
       oppIds,
     };
   });
-  const netById = Object.fromEntries(teamRows.map((t) => [t.id, t.net]));
-  teamRows.forEach((t) => (t.sos = mean(t.oppIds.map((o) => netById[o]))));
+  const byId = Object.fromEntries(teamRows.map((t) => [t.id, t]));
+  teamRows.forEach((t) => {
+    t.sos = mean(t.oppIds.map((o) => byId[o].net));
+    // Opponents' points % in games not against this team.
+    const opp = t.oppIds.map((o) => byId[o]);
+    const vsMe = (o) => results.filter((r) => r.team === o.id && r.opp === t.id);
+    const pts = (r) => (r.share > 0.5 ? 2 : r.share > 0 ? 1 : 0);
+    t.oppPtsPct = sum(opp, (o) => o.pts - sum(vsMe(o), pts)) /
+      (sum(opp, (o) => 2 * (o.gp - vsMe(o).length)) || 1);
+  });
   const zNet = zscores(teamRows.map((t) => t.net)), zPts = zscores(teamRows.map((t) => t.ptsPct));
-  teamRows.forEach((t, i) => (t.score = 50 + 10 * (W.teamNet * zNet[i] + W.teamPoints * zPts[i])));
-  teamRows.sort((a, b) => b.score - a.score).forEach((t, i) => { t.rank = i + 1; delete t.games; delete t.oppIds; });
-  const teamById = Object.fromEntries(teamRows.map((t) => [t.id, t]));
+  const zRes = zscores(teamRows.map((t) => Math.log(t.krach)));
+  teamRows.forEach((t, i) => (t.score = 50 + 10 * (W.teamNet * zNet[i] + W.teamResults * zRes[i] + W.teamPoints * zPts[i])));
+  teamRows.sort((a, b) => b.score - a.score).forEach((t, i) => (t.rank = i + 1));
+
+  // Quality wins: record against the top third of the league, and best win.
+  const topN = Math.ceil(teamRows.length / 3);
+  teamRows.forEach((t) => {
+    const mine = results.filter((r) => r.team === t.id);
+    const vsTop = mine.filter((r) => byId[r.opp].rank <= topN);
+    t.topN = topN;
+    t.vsTop = { w: vsTop.filter((r) => r.share > 0.5).length, l: vsTop.filter((r) => r.share === 0).length, otl: vsTop.filter((r) => r.share > 0 && r.share < 0.5).length };
+    const wins = mine.filter((r) => r.share > 0.5).map((r) => byId[r.opp]).sort((a, b) => a.rank - b.rank);
+    t.bestWin = wins.length ? { abbr: wins[0].abbr, rank: wins[0].rank } : null;
+    delete t.games; delete t.oppIds;
+  });
+
+  // How dangerous each team is for a goalie to face: half scoring ability,
+  // half overall team strength (which now includes quality of wins).
+  const zOff = zscores(teamRows.map((t) => t.offRating)), zScore = zscores(teamRows.map((t) => t.score));
+  teamRows.forEach((t, i) => (t.threat = 50 + 10 * (W.oppOffense * zOff[i] + (1 - W.oppOffense) * zScore[i])));
+  const teamById = byId;
 
   // ---------- goalies ----------
   // Every goalie appearance, with the opponent and result.
@@ -164,6 +216,7 @@ function analyze(games) {
       workloadGaa: shots ? (ga / shots) * shotMu : null,
       ratingWorkloadGaa: ((ga + config.goaliePriorShots * lgSh) / (shots + config.goaliePriorShots)) * shotMu,
       oppOffense: sum(a, (x) => x.min * (teamById[x.opp] ? teamById[x.opp].offRating : mu)) / (min || 1),
+      oppStrength: sum(a, (x) => x.min * (teamById[x.opp] ? teamById[x.opp].threat : 50)) / (min || 1),
       oppNet: sum(a, (x) => x.min * (teamById[x.opp] ? teamById[x.opp].net : 0)) / (min || 1),
       teamMinutes: teamMin,
       share: min / teamMin,
@@ -176,7 +229,7 @@ function analyze(games) {
     sv: zscores(q.map((g) => g.ratingSv)),
     gsax: zscores(q.map((g) => g.gsax)),
     gp: zscores(q.map((g) => -g.ratingWorkloadGaa)),
-    sos: zscores(q.map((g) => g.oppOffense)),
+    sos: zscores(q.map((g) => g.oppStrength)),
   };
   q.forEach((g, i) => {
     g.components = { sv: comp.sv[i], gsax: comp.gsax[i], goals: comp.gp[i], sos: comp.sos[i] };
@@ -237,8 +290,8 @@ const out = {
   league: current.lg, weeks, weekly,
   // Full rankings as they stood after each week, for the "as of" picker.
   snapshots: snapshots.map((s) => ({
-    goalies: s.goalies.filter((g) => g.rank).map((g) => ({ key: g.key, rank: g.rank, score: g.score, gp: g.gp, min: g.min, svPct: g.svPct, adjSvPct: g.adjSvPct, gsax: g.gsax, gaa: g.gaa, workloadGaa: g.workloadGaa, shotsPerGame: g.shotsPerGame, oppOffense: g.oppOffense, w: g.w, l: g.l, otl: g.otl })),
-    teams: s.teams.map((t) => ({ id: t.id, rank: t.rank, score: t.score, w: t.w, l: t.l, otl: t.otl, gp: t.gp, pts: t.pts, ptsPct: t.ptsPct, gf: t.gf, ga: t.ga, offRating: t.offRating, defRating: t.defRating, net: t.net, sos: t.sos, sf: t.sf, sa: t.sa })),
+    goalies: s.goalies.filter((g) => g.rank).map((g) => ({ key: g.key, rank: g.rank, score: g.score, gp: g.gp, min: g.min, svPct: g.svPct, adjSvPct: g.adjSvPct, gsax: g.gsax, gaa: g.gaa, workloadGaa: g.workloadGaa, shotsPerGame: g.shotsPerGame, oppOffense: g.oppOffense, oppStrength: g.oppStrength, w: g.w, l: g.l, otl: g.otl })),
+    teams: s.teams.map((t) => ({ id: t.id, rank: t.rank, score: t.score, w: t.w, l: t.l, otl: t.otl, gp: t.gp, pts: t.pts, ptsPct: t.ptsPct, gf: t.gf, ga: t.ga, offRating: t.offRating, defRating: t.defRating, net: t.net, sos: t.sos, sf: t.sf, sa: t.sa, krach: t.krach, oppPtsPct: t.oppPtsPct, vsTop: t.vsTop, topN: t.topN, bestWin: t.bestWin, threat: t.threat })),
   })),
   teams: current.teams.map((t) => ({ ...t, history: teamHistory[t.id] })),
   goalies: current.goalies.map((g) => ({ ...g, history: goalieHistory[g.key] || [] })),

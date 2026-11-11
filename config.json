@@ -13,8 +13,10 @@
     "gsax": 0.15,
     "goals": 0.15,
     "schedule": 0.15,
-    "teamNet": 0.7,
-    "teamPoints": 0.3
+    "teamNet": 0.4,
+    "teamResults": 0.35,
+    "teamPoints": 0.25,
+    "oppOffense": 0.5
   },
   "minMinutes": 90,
   "minShareOfTeamMinutes": 0.25,
@@ -22,5 +24,7 @@
   "teamPriorGames": 2,
   "finishingPriorShots": 150,
   "goaliePriorShots": 100,
-  "goaliePriorGames": 1
+  "goaliePriorGames": 1,
+  "resultsPriorGames": 2,
+  "overtimeWinShare": 0.6
 }
