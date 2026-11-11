@@ -27,7 +27,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - run: npm ci
@@ -39,7 +39,20 @@ jobs:
           key: scrape-cache-${{ github.run_id }}
           restore-keys: scrape-cache-
 
-      - run: npm run update
+      - name: Scrape league site
+        run: npm run scrape
+
+      - name: Check password secret
+        env:
+          SITE_PASSWORD: ${{ secrets.SITE_PASSWORD }}
+        run: |
+          if [ -z "$SITE_PASSWORD" ]; then
+            echo "::error::SITE_PASSWORD secret is missing. Add it under Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+
+      - name: Compute rankings
+        run: npm run analyze
         env:
           SITE_PASSWORD: ${{ secrets.SITE_PASSWORD }}
 
