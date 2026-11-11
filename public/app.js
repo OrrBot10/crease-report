@@ -54,14 +54,19 @@ document.addEventListener('mousemove', (e) => { const t = e.target.closest('[dat
 document.addEventListener('click', (e) => { const t = e.target.closest('[data-tip]'); if (t) showTip(e, t.dataset.tip); else hideTip(); });
 
 // ---------- header + spotlight ----------
+const phoneQuery = window.matchMedia('(max-width: 640px)');
+function setTabLabels() {
+  document.querySelectorAll('.tabs button').forEach((b) => (b.textContent = phoneQuery.matches ? b.dataset.short : b.dataset.full));
+}
 function renderHeader() {
   $('#season').textContent = D.season;
   const sel = $('#week');
   sel.innerHTML = D.weeks.map((w, i) => `<option value="${i}">Week ${i + 1} · ${weekLabel(w)}</option>`).join('');
   sel.value = state.week;
   sel.onchange = () => { state.week = +sel.value; state.open.clear(); render(); };
-  if (focus) $('#focusTab').textContent = firstName;
-  $('#foot').innerHTML = `Data from the MWHSL site (mwhshl.sportngin.com), scraped ${new Date(D.scrapedAt).toLocaleString()}. ${D.league.games} league games so far. Run <code>npm run update</code> after each weekend.`;
+  if (focus) $('#focusTab').dataset.full = $('#focusTab').dataset.short = D.config.focusTabLabel || firstName;
+  setTabLabels();
+  $('#foot').innerHTML = `Data from the MWHSL site (mwhshl.sportngin.com), scraped ${new Date(D.scrapedAt).toLocaleString()}. ${D.league.games} league games so far. Updates automatically every morning and late on weekend nights.`;
 }
 
 function rankAmong(key, field, snap, higherIsBetter = true) {
@@ -80,7 +85,7 @@ function renderSpotlight() {
   const r = (x) => (x ? `${ord(x.rank)} of ${x.of}` : '');
   el.innerHTML = `
     <div class="who">${D.config.focusPhoto ? `<span class="thumb"><img src="${esc(D.config.focusPhoto)}" alt=""></span>` : ''}<div><b>${esc(D.config.focusGoalie)}</b><span>${esc(focus.teamName)} · #${s ? s.rank : '–'} of ${snap.goalies.length} ranked goalies</span></div></div>
-    <div class="kpi"><span class="l">Power rank</span><span class="v">${s ? '#' + s.rank : '–'}</span><span class="r">${movement(s && s.rank, p && p.rank)} ${p ? 'vs last week' : ''}</span></div>
+    <div class="kpi kpi-rank"><span class="l">Power rank</span><span class="v">${s ? '#' + s.rank : '–'}</span><span class="r">${movement(s && s.rank, p && p.rank)} ${p ? 'vs last week' : ''}</span></div>
     <div class="kpi"><span class="l">Save %</span><span class="v">${pct(s && s.svPct)}</span><span class="r">${r(rankAmong(focus.key, 'svPct', snap))}</span></div>
     <div class="kpi kpi-adj"><span class="l">Adj save %</span><span class="v">${pct(s && s.adjSvPct)}</span><span class="r">${r(rankAmong(focus.key, 'adjSvPct', snap))}</span></div>
     <div class="kpi"><span class="l">Saved above exp.</span><span class="v ${sgnCls(s && s.gsax)}">${signed(s && s.gsax)}</span><span class="r">${r(rankAmong(focus.key, 'gsax', snap))}</span></div>
@@ -140,7 +145,7 @@ const gSortOptions = [['rank', 'Power rank'], ['svPct', 'Save %'], ['adjSvPct', 
 const gLowFirst = ['rank', 'gaa', 'workloadGaa', 'name', 'team'];
 function goalieCards(rows, i) {
   return `<div class="mob m-list" id="gcards">${rows.map((r) => `<div class="m-card ${r.key === D.focusKey ? 'focus' : ''}" data-key="${esc(r.key)}">
-    <div class="m-top"><span class="rank">${r.rank}</span>${movement(r.rank, r.prevRank)}<div class="m-name"><b>${esc(r.name)}</b><span>${esc(r.team)} · ${r.rec} · ${r.gp} GP</span></div><div class="m-score"><b>${f1(r.score)}</b><span>score</span></div></div>
+    <div class="m-top"><span class="rank">${r.rank}</span>${movement(r.rank, r.prevRank)}<div class="m-name"><b>${esc(r.name)}</b><span>${esc(r.team)} · ${r.rec}</span></div><div class="m-score"><b>${f1(r.score)}</b><span>score</span></div></div>
     <div class="m-stats">${mStat(pct(r.svPct), 'SV%')}${mStat(pct(r.adjSvPct), 'Adj SV%')}${mStat(signed(r.gsax), 'GSAx', sgnCls(r.gsax))}${mStat(f1(r.shotsPerGame), 'Shots/GP')}</div>
     ${state.open.has(r.key) ? `<div class="m-more"><div class="m-stats">${mStat(f2(r.gaa), 'GAA')}${mStat(f2(r.workloadGaa), 'Wkld GAA')}${mStat(f1(r.oppStrength), 'Opp Str')}${mStat(r.rec, 'W-L-OTL')}</div>${mobileGameLog(appsFor(r.key, i))}</div>` : '<div class="m-hint">Tap for game log</div>'}
   </div>`).join('')}</div>`;
@@ -247,16 +252,17 @@ function renderTeams() {
     return { ...t, name: base.name, abbr: base.abbr, prevRank: p ? p.rank : null, rec: `${t.w}-${t.l}-${t.otl}`, vsTopPct: t.vsTop.w * 2 + t.vsTop.otl - (t.vsTop.l + t.vsTop.otl) * 0.01, bestWinRank: t.bestWin ? -t.bestWin.rank : -99, gfpg: t.gf / t.gp, gapg: t.ga / t.gp, sfpg: t.sf / t.gp, sapg: t.sa / t.gp };
   }), state.sortT);
   $('#tab-teams').innerHTML = `
-    <h2>Team power rankings · through ${weekLabel(D.weeks[i])}</h2>
-    <p class="note mob">Power score = ${Math.round(D.weights.teamResults * 100)}% quality of wins, ${Math.round(D.weights.teamPoints * 100)}% win %, ${Math.round(D.weights.teamNet * 100)}% adjusted goal differential, all schedule-adjusted. Tap a team for more; details on the How tab.</p>
-    <p class="note desk">Ratings are schedule-adjusted: beating a strong team counts more than beating a weak one, and goals per game are capped at ${D.config.goalCapPerGame} so one blowout can't define a team. Power score is ${Math.round(D.weights.teamResults * 100)}% results rating (quality of wins), ${Math.round(D.weights.teamPoints * 100)}% win %, and ${Math.round(D.weights.teamNet * 100)}% adjusted goal differential. "vs Top" is the record against the top ${D.teams[0] ? D.teams[0].topN : 5}. These ratings also set the opponent strength used for goalies.</p>
+    <h2>League Power Rankings · through ${weekLabel(D.weeks[i])}</h2>
     ${sortSelect('tsort', tSortOptions, state.sortT)}
     ${teamCards(rows)}
     <div class="tbl-wrap desk"><table id="tt"><thead><tr>${tCols.map(([k, l, t]) => `<th class="${k === 'name' ? 'l ' : ''}${k !== 'mv' ? 'sortable' : ''} ${state.sortT.k === k ? 'sorted' : ''}" data-k="${k}" ${t ? `data-tip="${esc(t)}"` : ''}>${l}</th>`).join('')}</tr></thead>
     <tbody>${rows.map((t) => `<tr class="${t.abbr === D.config.focusTeam ? 'focus' : ''}"><td class="rank">${t.rank}</td><td>${movement(t.rank, t.prevRank)}</td><td class="l name">${esc(t.name)} <span class="team">${esc(t.abbr)}</span></td>
       <td>${t.rec}</td><td>${pct(t.ptsPct)}</td><td>${f2(t.gfpg)}</td><td>${f2(t.gapg)}</td><td>${f1(t.sfpg)}</td><td>${f1(t.sapg)}</td>
       <td class="${sgnCls(t.net)}">${signed(t.net, 2)}</td><td>${f2(t.krach)}</td><td>${t.vsTop.w}-${t.vsTop.l}-${t.vsTop.otl}</td><td class="l">${t.bestWin ? `${esc(t.bestWin.abbr)} <span class="team">#${t.bestWin.rank}</span>` : '<span class="team">–</span>'}</td>
-      <td>${pct(t.oppPtsPct)}</td><td class="${sgnCls(t.sos)}">${signed(t.sos, 2)}</td><td>${f1(t.score)}</td></tr>`).join('')}</tbody></table></div>`;
+      <td>${pct(t.oppPtsPct)}</td><td class="${sgnCls(t.sos)}">${signed(t.sos, 2)}</td><td>${f1(t.score)}</td></tr>`).join('')}</tbody></table></div>
+    <h3>How the league rankings work</h3>
+    <p class="note mob">Power score = ${Math.round(D.weights.teamResults * 100)}% quality of wins, ${Math.round(D.weights.teamPoints * 100)}% win %, ${Math.round(D.weights.teamNet * 100)}% adjusted goal differential, all schedule-adjusted. Tap a team for more; details on the How tab.</p>
+    <p class="note desk">Ratings are schedule-adjusted: beating a strong team counts more than beating a weak one, and goals per game are capped at ${D.config.goalCapPerGame} so one blowout can't define a team. Power score is ${Math.round(D.weights.teamResults * 100)}% results rating (quality of wins), ${Math.round(D.weights.teamPoints * 100)}% win %, and ${Math.round(D.weights.teamNet * 100)}% adjusted goal differential. "vs Top" is the record against the top ${D.teams[0] ? D.teams[0].topN : 5}. These ratings also set the opponent strength used for goalies.</p>`;
   $('#tt thead').onclick = (e) => {
     const th = e.target.closest('th.sortable'); if (!th) return;
     const k = th.dataset.k;
@@ -272,7 +278,7 @@ function renderTeams() {
 
 // ---------- focus goalie ----------
 // Charts draw in a narrower coordinate space on phones so their text stays legible.
-const chartWidth = () => (window.matchMedia('(max-width: 640px)').matches ? 360 : 520);
+const chartWidth = () => (phoneQuery.matches ? 360 : 520);
 function rankLine(values, i) {
   // Single-series line of power rank by week, rank 1 at top.
   const W = chartWidth(), H = 200, L = 34, R = 14, T = 14, B = 28;
@@ -450,4 +456,4 @@ renderHeader();
 render();
 setTab(state.tab);
 // Redraw when crossing the phone breakpoint (e.g. rotating a tablet) so charts pick the right width.
-window.matchMedia('(max-width: 640px)').addEventListener('change', render);
+phoneQuery.addEventListener('change', () => { setTabLabels(); render(); });

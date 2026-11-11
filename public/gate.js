@@ -21,7 +21,7 @@
     form.remove();
     document.body.classList.remove('locked');
     const s = document.createElement('script');
-    s.src = 'app.js';
+    s.src = 'app.js' + ((document.getElementById('gate-script').src.match(/\?v=[^&]*/) || [''])[0]);
     document.body.appendChild(s);
   }
 

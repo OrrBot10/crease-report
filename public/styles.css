@@ -317,3 +317,15 @@ body.locked main, body.locked .picker { display: none; }
   .spotlight .kpi .v { font-size: 18px; }
   .spotlight .kpi .r { font-size: 11px; }
 }
+
+/* Brenden's overview box: everything centered, name and rank a bit larger */
+.spotlight { justify-content: space-around; text-align: center; }
+.spotlight .who { justify-content: center; }
+.spotlight .who b { font-size: 21px; }
+.spotlight .kpi { align-items: center; }
+.spotlight .kpi-rank .v { font-size: 28px; line-height: 1.1; }
+@media (max-width: 640px) {
+  .spotlight { justify-items: center; align-items: end; }
+  .spotlight .who b { font-size: 20px; }
+  .spotlight .kpi-rank .v { font-size: 24px; }
+}
