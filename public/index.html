@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Crease Report</title>
+  <link rel="icon" href="img/jr-storm.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="locked">
+  <header class="top">
+    <div class="wrap">
+      <div class="brand">
+        <img class="logo" src="img/jr-storm.png" alt="Quad City Junior Storm logo">
+        <div>
+        <h1>Crease <span>Report</span></h1>
+        <p class="sub">Midwest High School Hockey League · <span id="season"></span> varsity goalies, adjusted for who they played</p>
+        </div>
+      </div>
+      <label class="picker">Rankings as of
+        <select id="week"></select>
+      </label>
+    </div>
+  </header>
+
+  <form id="gate" class="gate" hidden autocomplete="off">
+    <img src="img/jr-storm.png" alt="">
+    <h2>Crease Report</h2>
+    <p>Enter the password to view the rankings.</p>
+    <input id="pw" type="password" placeholder="Password" aria-label="Password" required>
+    <label class="remember"><input id="remember" type="checkbox" checked> Remember on this device</label>
+    <button type="submit">Enter</button>
+    <p id="gate-msg" class="gate-msg" role="status"></p>
+  </form>
+
+  <main class="wrap">
+    <section id="spotlight" class="spotlight"></section>
+
+    <nav class="tabs" role="tablist">
+      <button data-tab="goalies" class="on">Goalie rankings</button>
+      <button data-tab="weekend">Weekend</button>
+      <button data-tab="teams">Team rankings</button>
+      <button data-tab="focus" id="focusTab">Spotlight</button>
+      <button data-tab="how">How it works</button>
+    </nav>
+
+    <section id="tab-goalies" class="tab"></section>
+    <section id="tab-weekend" class="tab" hidden></section>
+    <section id="tab-teams" class="tab" hidden></section>
+    <section id="tab-focus" class="tab" hidden></section>
+    <section id="tab-how" class="tab" hidden></section>
+
+    <footer id="foot"></footer>
+  </main>
+  <div id="tip" class="tip" hidden></div>
+
+  <script src="data.js"></script>
+  <script src="gate.js"></script>
+</body>
+</html>

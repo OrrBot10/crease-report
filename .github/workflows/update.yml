@@ -1,0 +1,71 @@
+# Pulls new box scores, recomputes the rankings, commits the data, and
+# publishes the site to GitHub Pages. Runs on GitHub's servers, not a laptop.
+name: Update rankings
+
+on:
+  schedule:
+    - cron: "0 11 * * *"       # every morning, 5 AM Central (6 AM during daylight time)
+    - cron: "30 5 * * 6,0,1"   # 11:30 PM Central Fri/Sat/Sun, after weekend games
+  workflow_dispatch: {}        # "Run workflow" button on the Actions tab
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: update-rankings
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # Finished games never change, so keep the downloaded pages between runs.
+      - uses: actions/cache@v4
+        with:
+          path: cache
+          key: scrape-cache-${{ github.run_id }}
+          restore-keys: scrape-cache-
+
+      - run: npm run update
+        env:
+          SITE_PASSWORD: ${{ secrets.SITE_PASSWORD }}
+
+      - name: Commit new data
+        run: |
+          git config user.name "rankings-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/games.json public/data.js
+          if git diff --cached --quiet; then
+            echo "No new games."
+          else
+            git commit -m "Update rankings $(date -u +%Y-%m-%d)"
+            git push
+          fi
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy:
+    needs: update
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
