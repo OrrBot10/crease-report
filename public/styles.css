@@ -225,3 +225,7 @@ body.locked main, body.locked .picker { display: none; }
   background: var(--header); color: var(--header-text); box-shadow: inset 0 -3px 0 var(--accent);
 }
 .gate .gate-msg { min-height: 1.4em; margin: 10px 0 0; color: var(--down); }
+
+/* team table: many columns, so tighter cells and wrapping headers */
+#tt th, #tt td { padding: 8px 7px; }
+#tt th { white-space: normal; line-height: 1.2; vertical-align: bottom; }
