@@ -15,9 +15,36 @@ function sitePassword() {
   throw new Error('No site password: set SITE_PASSWORD or create a .site-password file.');
 }
 
+function encrypt(buf, password) {
+  const salt = crypto.randomBytes(16), iv = crypto.randomBytes(12);
+  const key = crypto.pbkdf2Sync(password, salt, ITERATIONS, 32, 'sha256');
+  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+  // WebCrypto's AES-GCM expects the auth tag appended to the ciphertext.
+  const data = Buffer.concat([cipher.update(buf), cipher.final(), cipher.getAuthTag()]);
+  return { iter: ITERATIONS, salt: salt.toString('base64'), iv: iv.toString('base64'), data: data.toString('base64') };
+}
+
+function decrypt(enc, password) {
+  const key = crypto.pbkdf2Sync(password, Buffer.from(enc.salt, 'base64'), enc.iter, 32, 'sha256');
+  const d = Buffer.from(enc.data, 'base64');
+  const decipher = crypto.createDecipheriv('aes-256-gcm', key, Buffer.from(enc.iv, 'base64'));
+  decipher.setAuthTag(d.subarray(-16));
+  return Buffer.concat([decipher.update(d.subarray(0, -16)), decipher.final()]);
+}
+
 // The focus goalie's photo rides inside the encrypted data rather than sitting
-// in the public repo. It's downloaded from the league roster once and cached.
-async function photoDataUrl(url) {
+// in the public repo. A family photo is kept encrypted in the repo
+// (npm run set-photo); otherwise the league roster photo is downloaded and cached.
+async function photoDataUrl(config) {
+  if (config.focusPhotoFile) {
+    const file = path.join(__dirname, config.focusPhotoFile);
+    try {
+      return 'data:image/jpeg;base64,' + decrypt(JSON.parse(fs.readFileSync(file, 'utf8')), sitePassword()).toString('base64');
+    } catch (e) {
+      console.warn(`Couldn't read ${config.focusPhotoFile} (${e.message}). If the password changed, re-run npm run set-photo. Falling back to the roster photo.`);
+    }
+  }
+  const url = config.focusPhotoUrl;
   if (!url) return null;
   const file = path.join(__dirname, 'cache', 'focus-photo.jpg');
   if (!fs.existsSync(file)) {
@@ -29,14 +56,13 @@ async function photoDataUrl(url) {
   return 'data:image/jpeg;base64,' + fs.readFileSync(file).toString('base64');
 }
 
-module.exports = async function publish(out) {
-  out.config = { ...out.config, focusPhoto: await photoDataUrl(out.config.focusPhotoUrl) };
-  const salt = crypto.randomBytes(16), iv = crypto.randomBytes(12);
-  const key = crypto.pbkdf2Sync(sitePassword(), salt, ITERATIONS, 32, 'sha256');
-  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
-  // WebCrypto's AES-GCM expects the auth tag appended to the ciphertext.
-  const data = Buffer.concat([cipher.update(JSON.stringify(out), 'utf8'), cipher.final(), cipher.getAuthTag()]);
-  const enc = { iter: ITERATIONS, salt: salt.toString('base64'), iv: iv.toString('base64'), data: data.toString('base64') };
+async function publish(out) {
+  out.config = { ...out.config, focusPhoto: await photoDataUrl(out.config) };
+  const enc = encrypt(Buffer.from(JSON.stringify(out), 'utf8'), sitePassword());
   fs.mkdirSync(path.join(__dirname, 'public'), { recursive: true });
   fs.writeFileSync(path.join(__dirname, 'public', 'data.js'), 'window.ENC = ' + JSON.stringify(enc) + ';\n');
-};
+}
+
+module.exports = publish;
+module.exports.encrypt = encrypt;
+module.exports.sitePassword = sitePassword;
