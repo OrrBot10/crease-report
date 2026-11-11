@@ -187,14 +187,12 @@ function upcomingGames() {
 
 // ---------- teams ----------
 const tCols = [
-  ['rank', 'Rk', ''], ['mv', '', ''], ['name', 'Team', ''], ['rec', 'W-L-OTL', 'OTL includes shootout losses'], ['ptsPct', 'Pts%', 'Points earned / points available'],
+  ['rank', 'Rk', ''], ['mv', '', ''], ['name', 'Team', ''], ['rec', 'W-L-OTL', 'OTL includes shootout losses'], ['ptsPct', 'Win%', 'Win percentage, with overtime and shootout losses counting as half a win (same as points %)'],
   ['gfpg', 'GF/GP', ''], ['gapg', 'GA/GP', ''], ['sfpg', 'SF/GP', 'Shots for per game'], ['sapg', 'SA/GP', 'Shots against per game'],
-  ['offRating', 'Off', 'Goals/game they would score against an average defense (schedule-adjusted)'],
-  ['defRating', 'Def', 'Goals/game they would allow against an average offense (lower is better)'],
-  ['net', 'Net', 'Off minus Def: expected goal margin against an average team'],
+  ['net', 'Adj Goal Diff', 'Goals per game better (or worse) than an average team, adjusted for opponent strength. Blowouts capped'],
   ['krach', 'Results', 'Results rating: wins are worth more the stronger the team beaten. 1.00 = average; 2.00 = results like a team twice as strong'],
   ['vsTopPct', 'vs Top', 'Record against the top third of the league (by current rank)'], ['bestWinRank', 'Best win', 'Highest-ranked team beaten'],
-  ['oppPtsPct', 'Opp Pts%', "Opponents' points % in their other games"], ['sos', 'SOS', 'Average Net rating of opponents faced'], ['score', 'Power score', ''],
+  ['oppPtsPct', 'Opp Win%', "Opponents' win % in their other games (OT/SO losses count as half a win)"], ['sos', 'SOS', 'Strength of schedule: average Adj Goal Diff of opponents faced'], ['score', 'Power score', ''],
 ];
 function renderTeams() {
   const i = state.week, prev = D.snapshots[i - 1];
@@ -204,15 +202,15 @@ function renderTeams() {
   }), state.sortT);
   $('#tab-teams').innerHTML = `
     <h2>Team power rankings · through ${weekLabel(D.weeks[i])}</h2>
-    <p class="note">Ratings are schedule-adjusted: beating a strong team counts more than beating a weak one, and goals per game are capped at ${D.config.goalCapPerGame} so one blowout can't define a team. Power score is ${Math.round(D.weights.teamResults * 100)}% results rating (quality of wins), ${Math.round(D.weights.teamPoints * 100)}% points %, and ${Math.round(D.weights.teamNet * 100)}% net goal rating. "vs Top" is the record against the top ${D.teams[0] ? D.teams[0].topN : 5}. These ratings also set the opponent strength used for goalies.</p>
+    <p class="note">Ratings are schedule-adjusted: beating a strong team counts more than beating a weak one, and goals per game are capped at ${D.config.goalCapPerGame} so one blowout can't define a team. Power score is ${Math.round(D.weights.teamResults * 100)}% results rating (quality of wins), ${Math.round(D.weights.teamPoints * 100)}% win %, and ${Math.round(D.weights.teamNet * 100)}% adjusted goal differential. "vs Top" is the record against the top ${D.teams[0] ? D.teams[0].topN : 5}. These ratings also set the opponent strength used for goalies.</p>
     <div class="tbl-wrap"><table id="tt"><thead><tr>${tCols.map(([k, l, t]) => `<th class="${k === 'name' ? 'l ' : ''}${k !== 'mv' ? 'sortable' : ''} ${state.sortT.k === k ? 'sorted' : ''}" data-k="${k}" ${t ? `data-tip="${esc(t)}"` : ''}>${l}</th>`).join('')}</tr></thead>
     <tbody>${rows.map((t) => `<tr class="${t.abbr === D.config.focusTeam ? 'focus' : ''}"><td class="rank">${t.rank}</td><td>${movement(t.rank, t.prevRank)}</td><td class="l name">${esc(t.name)} <span class="team">${esc(t.abbr)}</span></td>
       <td>${t.rec}</td><td>${pct(t.ptsPct)}</td><td>${f2(t.gfpg)}</td><td>${f2(t.gapg)}</td><td>${f1(t.sfpg)}</td><td>${f1(t.sapg)}</td>
-      <td>${f2(t.offRating)}</td><td>${f2(t.defRating)}</td><td class="${sgnCls(t.net)}">${signed(t.net, 2)}</td><td>${f2(t.krach)}</td><td>${t.vsTop.w}-${t.vsTop.l}-${t.vsTop.otl}</td><td class="l">${t.bestWin ? `${esc(t.bestWin.abbr)} <span class="team">#${t.bestWin.rank}</span>` : '<span class="team">–</span>'}</td>
+      <td class="${sgnCls(t.net)}">${signed(t.net, 2)}</td><td>${f2(t.krach)}</td><td>${t.vsTop.w}-${t.vsTop.l}-${t.vsTop.otl}</td><td class="l">${t.bestWin ? `${esc(t.bestWin.abbr)} <span class="team">#${t.bestWin.rank}</span>` : '<span class="team">–</span>'}</td>
       <td>${pct(t.oppPtsPct)}</td><td class="${sgnCls(t.sos)}">${signed(t.sos, 2)}</td><td>${f1(t.score)}</td></tr>`).join('')}</tbody></table></div>`;
   $('#tt thead').onclick = (e) => {
     const th = e.target.closest('th.sortable'); if (!th) return;
-    const k = th.dataset.k, lowFirst = ['rank', 'name', 'gapg', 'sapg', 'defRating'].includes(k);
+    const k = th.dataset.k, lowFirst = ['rank', 'name', 'gapg', 'sapg'].includes(k);
     state.sortT = state.sortT.k === k ? { k, dir: -state.sortT.dir } : { k, dir: lowFirst ? 1 : -1 };
     renderTeams();
   };
@@ -349,9 +347,9 @@ function renderHow() {
   $('#tab-how').innerHTML = `<div class="how">
     <h2>How the rankings work</h2>
     <h3>1. Team strength</h3>
-    <p>Each team gets an <b>offense</b> rating and a <b>defense</b> rating from every league result, adjusted for the opponents. Scoring 5 on a strong defense counts for more than scoring 5 on a weak one. Goals are capped at ${D.config.goalCapPerGame} a game, and every team starts with ${D.config.teamPriorGames} games of league-average "ballast" so early weeks don't swing wildly. Net rating = offense − defense.</p>
+    <p>Each team gets an <b>offense</b> rating and a <b>defense</b> rating from every league result, adjusted for the opponents. Scoring 5 on a strong defense counts for more than scoring 5 on a weak one. Goals are capped at ${D.config.goalCapPerGame} a game, and every team starts with ${D.config.teamPriorGames} games of league-average "ballast" so early weeks don't swing wildly. Adjusted goal differential (Adj Goal Diff) = offense − defense: how many goals a game better than an average team.</p>
     <p>Each team also gets a <b>results rating</b> (the KRACH method used in college hockey). Every win is worth more the stronger the team beaten, and all teams are solved together, so beating a team that has beaten good teams counts the most. Going 6-0 against weak teams earns less than 4-1 against strong ones. Overtime and shootout games split the credit ${Math.round(D.config.overtimeWinShare * 100)}/${Math.round((1 - D.config.overtimeWinShare) * 100)}, and every team starts with ${D.config.resultsPriorGames} virtual ties against an average team so an early unbeaten record doesn't run away.</p>
-    <p><b>Team power score</b> = ${p(w.teamResults)} results rating + ${p(w.teamPoints)} points % + ${p(w.teamNet)} net goal rating. Record still carries the most weight, but now it's measured by whom you beat.</p>
+    <p><b>Team power score</b> = ${p(w.teamResults)} results rating + ${p(w.teamPoints)} win % (OT/SO losses count as half a win) + ${p(w.teamNet)} adjusted goal differential. Record still carries the most weight, but now it's measured by whom you beat.</p>
     <h3>2. Expected goals against, for every goalie in every game</h3>
     <p>The league-wide shooting % is ${pct(D.league.sh)} (an average save % of ${pct(D.league.sv)}). Some teams finish their chances better than others, so each team gets a <b>finishing factor</b>, estimated jointly with the goalies they shot on so a team isn't credited just for facing weak goalies. Expected goals against (xGA) = shots faced × league shooting % × the opponent's finishing factor.</p>
     <ul>
