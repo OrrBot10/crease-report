@@ -61,6 +61,19 @@ async function publish(out) {
   const enc = encrypt(Buffer.from(JSON.stringify(out), 'utf8'), sitePassword());
   fs.mkdirSync(path.join(__dirname, 'public'), { recursive: true });
   fs.writeFileSync(path.join(__dirname, 'public', 'data.js'), 'window.ENC = ' + JSON.stringify(enc) + ';\n');
+  stampVersion();
+}
+
+// GitHub Pages lets browsers cache files for 10 minutes, which can pair a new
+// page with an old stylesheet. Stamp asset links with a hash of their contents
+// so every update loads fresh copies.
+function stampVersion() {
+  const pub = path.join(__dirname, 'public');
+  const hash = crypto.createHash('sha256');
+  for (const f of ['styles.css', 'app.js', 'gate.js', 'data.js']) hash.update(fs.readFileSync(path.join(pub, f)));
+  const v = hash.digest('hex').slice(0, 10);
+  const index = path.join(pub, 'index.html');
+  fs.writeFileSync(index, fs.readFileSync(index, 'utf8').replace(/\?v=[\w-]+/g, '?v=' + v));
 }
 
 module.exports = publish;

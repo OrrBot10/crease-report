@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Crease Report</title>
   <link rel="icon" href="img/jr-storm.png">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=912164e37b">
 </head>
 <body class="locked">
   <header class="top">
@@ -37,11 +37,11 @@
     <section id="spotlight" class="spotlight"></section>
 
     <nav class="tabs" role="tablist">
-      <button data-tab="goalies" class="on"><span class="full">Goalie rankings</span><span class="short">Goalies</span></button>
-      <button data-tab="weekend">Weekend</button>
-      <button data-tab="teams"><span class="full">Team rankings</span><span class="short">Teams</span></button>
-      <button data-tab="focus" id="focusTab">Spotlight</button>
-      <button data-tab="how"><span class="full">How it works</span><span class="short">How</span></button>
+      <button data-tab="goalies" class="on" data-full="Goalie rankings" data-short="Goalies">Goalie rankings</button>
+      <button data-tab="weekend" data-full="Weekend" data-short="Weekend">Weekend</button>
+      <button data-tab="teams" data-full="League Power Rankings" data-short="League">League Power Rankings</button>
+      <button data-tab="focus" id="focusTab" data-full="Spotlight" data-short="Spotlight">Spotlight</button>
+      <button data-tab="how" data-full="How it works" data-short="How">How it works</button>
     </nav>
 
     <section id="tab-goalies" class="tab"></section>
@@ -54,7 +54,7 @@
   </main>
   <div id="tip" class="tip" hidden></div>
 
-  <script src="data.js"></script>
-  <script src="gate.js"></script>
+  <script src="data.js?v=912164e37b"></script>
+  <script src="gate.js?v=912164e37b" id="gate-script"></script>
 </body>
 </html>
