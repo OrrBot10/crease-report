@@ -329,3 +329,35 @@ body.locked main, body.locked .picker { display: none; }
   .spotlight .who b { font-size: 20px; }
   .spotlight .kpi-rank .v { font-size: 24px; }
 }
+
+/* phone round 3: tabs back up top (sticky under the header), tighter cards */
+@media (max-width: 640px) {
+  body { padding-bottom: 0; }
+  .tabs {
+    position: sticky; top: var(--hdr-h, 54px); bottom: auto; left: auto; right: auto; z-index: 4;
+    margin: 0 -12px 12px; padding: 0; border-top: 0; border-bottom: 1px solid var(--line);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+  .tabs button { padding: 10px 2px 9px; border-top: 0; border-bottom: 3px solid transparent; }
+  .tabs button.on { border-bottom-color: var(--accent); }
+  .spotlight { margin: 10px 0 10px; }
+
+  .m-list { gap: 6px; }
+  .m-card { padding: 7px 10px 8px; }
+  .m-tap { cursor: pointer; }
+  .m-top { gap: 7px; }
+  .m-top .rank { font-size: 16px; min-width: 20px; }
+  .m-name b { font-size: 14.5px; }
+  .m-score b { font-size: 17px; }
+  .m-score span { font-size: 9px; }
+  .m-stats { margin-top: 5px; gap: 2px; }
+  .m-stats b { font-size: 14px; }
+  .m-stats span { font-size: 9px; }
+  .m-chev { flex: none; width: 18px; height: 18px; border-radius: 50%; background: var(--surface-2); position: relative; margin-left: -2px; }
+  .m-chev::after {
+    content: ""; position: absolute; left: 6px; top: 5px; width: 5px; height: 5px;
+    border-right: 2px solid var(--text-2); border-bottom: 2px solid var(--text-2); transform: rotate(45deg); transition: transform 0.15s;
+  }
+  .m-card.open .m-chev::after { transform: rotate(-135deg); top: 7px; }
+  .m-sort { margin-bottom: 8px; }
+}
