@@ -96,7 +96,8 @@ select {
   display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: center; cursor: pointer;
 }
 .spotlight .who { min-width: 180px; display: flex; align-items: center; gap: 12px; }
-.spotlight .who img { width: 58px; height: 74px; object-fit: cover; object-position: top; border-radius: 8px; border: 2px solid var(--accent); }
+.spotlight .who .thumb { flex: none; width: 66px; height: 74px; overflow: hidden; border-radius: 8px; border: 2px solid var(--accent); }
+.spotlight .who .thumb img { display: block; width: 180%; margin: -2% 0 0 -32%; }
 .spotlight .who b { font-size: 18px; display: block; }
 .spotlight .who span { color: var(--text-2); font-size: 13px; }
 .kpi { display: flex; flex-direction: column; }
@@ -164,13 +165,13 @@ tr.focus td:first-child { box-shadow: inset 4px 0 0 var(--bolt); }
   color: var(--header-text); border-radius: 12px; padding: 16px; margin-bottom: 14px;
   border-bottom: 4px solid var(--accent);
 }
-.hero .photo { width: 120px; height: 168px; object-fit: cover; object-position: top; border-radius: 10px; border: 3px solid var(--accent); background: #fff; }
+.hero .photo { width: 150px; height: 168px; object-fit: cover; object-position: top; border-radius: 10px; border: 3px solid var(--accent); background: #fff; }
 .hero h2 { font-size: 26px; margin: 0; }
 .hero .meta { color: #c9d3dc; margin-top: 2px; }
 .hero .bigrank { font-size: 44px; font-weight: 800; line-height: 1; color: var(--bolt); margin-top: 10px; }
 .hero .bigrank small { font-size: 14px; font-weight: 600; color: #c9d3dc; margin-left: 6px; }
 .hero .logo { height: 70px; margin-left: auto; background: #fff; border-radius: 8px; padding: 4px 6px; }
-@media (max-width: 640px) { .hero .logo { display: none; } .hero .photo { width: 96px; height: 134px; } }
+@media (max-width: 640px) { .hero .logo { display: none; } .hero .photo { width: 120px; height: 134px; } }
 .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
 .tile { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
 .tile .v { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }

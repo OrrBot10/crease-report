@@ -26,5 +26,6 @@
   "goaliePriorShots": 100,
   "goaliePriorGames": 1,
   "resultsPriorGames": 2,
-  "overtimeWinShare": 0.6
+  "overtimeWinShare": 0.6,
+  "focusPhotoFile": "assets/focus-photo.enc.json"
 }

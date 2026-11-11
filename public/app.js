@@ -77,7 +77,7 @@ function renderSpotlight() {
   const shotsR = rankAmong(focus.key, 'shotsPerGame', snap);
   const r = (x) => (x ? `${ord(x.rank)} of ${x.of}` : '');
   el.innerHTML = `
-    <div class="who">${D.config.focusPhoto ? `<img src="${esc(D.config.focusPhoto)}" alt="">` : ''}<div><b>${esc(D.config.focusGoalie)}</b><span>${esc(focus.teamName)} · #${s ? s.rank : '–'} of ${snap.goalies.length} ranked goalies</span></div></div>
+    <div class="who">${D.config.focusPhoto ? `<span class="thumb"><img src="${esc(D.config.focusPhoto)}" alt=""></span>` : ''}<div><b>${esc(D.config.focusGoalie)}</b><span>${esc(focus.teamName)} · #${s ? s.rank : '–'} of ${snap.goalies.length} ranked goalies</span></div></div>
     <div class="kpi"><span class="l">Power rank</span><span class="v">${s ? '#' + s.rank : '–'}</span><span class="r">${movement(s && s.rank, p && p.rank)} ${p ? 'vs last week' : ''}</span></div>
     <div class="kpi"><span class="l">Save %</span><span class="v">${pct(s && s.svPct)}</span><span class="r">${r(rankAmong(focus.key, 'svPct', snap))}</span></div>
     <div class="kpi"><span class="l">Adj save %</span><span class="v">${pct(s && s.adjSvPct)}</span><span class="r">${r(rankAmong(focus.key, 'adjSvPct', snap))}</span></div>
