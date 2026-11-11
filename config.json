@@ -1,0 +1,26 @@
+{
+  "season": "2026-27",
+  "leagueInstance": 232142,
+  "subseason": 965665,
+  "seasonStart": "2026-10-01",
+  "seasonEnd": "2027-03-15",
+  "focusGoalie": "Brenden Orr",
+  "focusTeam": "QC",
+  "focusPhotoUrl": "https://cdn2.sportngin.com/attachments/roster_player_info/0b1f-221180459/_64_Orr_large.jpg",
+  "teamLogo": "img/jr-storm.png",
+  "weights": {
+    "adjSave": 0.55,
+    "gsax": 0.15,
+    "goals": 0.15,
+    "schedule": 0.15,
+    "teamNet": 0.7,
+    "teamPoints": 0.3
+  },
+  "minMinutes": 90,
+  "minShareOfTeamMinutes": 0.25,
+  "goalCapPerGame": 8,
+  "teamPriorGames": 2,
+  "finishingPriorShots": 150,
+  "goaliePriorShots": 100,
+  "goaliePriorGames": 1
+}

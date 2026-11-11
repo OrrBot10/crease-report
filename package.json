@@ -1,0 +1,19 @@
+{
+  "name": "crease-report",
+  "version": "1.0.0",
+  "description": "MWHSL goalie and team power rankings",
+  "scripts": {
+    "update": "node scrape.js && node analyze.js",
+    "scrape": "node scrape.js",
+    "analyze": "node analyze.js",
+    "start": "node serve.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "cheerio": "^1.0.0"
+  },
+  "private": true
+}
