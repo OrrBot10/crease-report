@@ -25,7 +25,7 @@ const focus = goalieByKey[D.focusKey];
 const firstName = D.config.focusGoalie.split(' ')[0];
 
 // ---------- state ----------
-const state = { week: D.weeks.length - 1, tab: 'goalies', open: new Set(), sortG: { k: 'rank', dir: 1 }, sortT: { k: 'rank', dir: 1 } };
+const state = { week: D.weeks.length - 1, tab: 'goalies', open: new Set(), openT: new Set(), sortG: { k: 'rank', dir: 1 }, sortT: { k: 'rank', dir: 1 } };
 try { const t = localStorage.getItem('crease-tab'); if (t) state.tab = t; } catch (e) { /* storage unavailable */ }
 
 function movement(curRank, prevRank) {
@@ -50,6 +50,8 @@ function moveTip(e) {
 }
 function hideTip() { tip.hidden = true; }
 document.addEventListener('mousemove', (e) => { const t = e.target.closest('[data-tip]'); if (t) showTip(e, t.dataset.tip); else if (!tip.hidden) hideTip(); });
+// Phones have no hover: tapping a chart point or header shows its tip, tapping elsewhere hides it.
+document.addEventListener('click', (e) => { const t = e.target.closest('[data-tip]'); if (t) showTip(e, t.dataset.tip); else hideTip(); });
 
 // ---------- header + spotlight ----------
 function renderHeader() {
@@ -80,10 +82,24 @@ function renderSpotlight() {
     <div class="who">${D.config.focusPhoto ? `<span class="thumb"><img src="${esc(D.config.focusPhoto)}" alt=""></span>` : ''}<div><b>${esc(D.config.focusGoalie)}</b><span>${esc(focus.teamName)} · #${s ? s.rank : '–'} of ${snap.goalies.length} ranked goalies</span></div></div>
     <div class="kpi"><span class="l">Power rank</span><span class="v">${s ? '#' + s.rank : '–'}</span><span class="r">${movement(s && s.rank, p && p.rank)} ${p ? 'vs last week' : ''}</span></div>
     <div class="kpi"><span class="l">Save %</span><span class="v">${pct(s && s.svPct)}</span><span class="r">${r(rankAmong(focus.key, 'svPct', snap))}</span></div>
-    <div class="kpi"><span class="l">Adj save %</span><span class="v">${pct(s && s.adjSvPct)}</span><span class="r">${r(rankAmong(focus.key, 'adjSvPct', snap))}</span></div>
+    <div class="kpi kpi-adj"><span class="l">Adj save %</span><span class="v">${pct(s && s.adjSvPct)}</span><span class="r">${r(rankAmong(focus.key, 'adjSvPct', snap))}</span></div>
     <div class="kpi"><span class="l">Saved above exp.</span><span class="v ${sgnCls(s && s.gsax)}">${signed(s && s.gsax)}</span><span class="r">${r(rankAmong(focus.key, 'gsax', snap))}</span></div>
-    <div class="kpi"><span class="l">Shots faced / game</span><span class="v">${f1(s && s.shotsPerGame)}</span><span class="r">${r(shotsR)}</span></div>`;
+    <div class="kpi"><span class="l">Shots / game</span><span class="v">${f1(s && s.shotsPerGame)}</span><span class="r">${r(shotsR)}</span></div>`;
   el.onclick = () => setTab('focus');
+}
+
+// ---------- phone layouts ----------
+// Wide tables become cards on phones (CSS shows .mob or .desk by screen width).
+const mStat = (v, l, cls = '') => `<div><b class="${cls}">${v}</b><span>${l}</span></div>`;
+function sortSelect(id, options, sort) {
+  return `<label class="m-sort mob">Sort by <select id="${id}">${options.map(([k, l]) => `<option value="${k}" ${sort.k === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>`;
+}
+function mobileGameLog(apps) {
+  if (!apps.length) return '<p class="note">No games yet.</p>';
+  return `<div class="m-log">${apps.map((a) => `<div class="m-game">
+    <div>${md(a.date)} ${a.home ? 'vs' : '@'} <b>${esc(a.oppAbbr)}</b>${a.oppRank ? ` <span class="team">#${a.oppRank}</span>` : ''} · ${a.decision ? `<b>${a.decision}</b> ` : '<span class="team">relief</span> '}${a.score}</div>
+    <div class="team">${a.saves} saves on ${a.shots} · ${pct(a.svPct)} · exp. GA ${f1(a.xga)}</div>
+    <div class="m-g ${sgnCls(a.gsax)}">${signed(a.gsax)}<span>GSAx</span></div></div>`).join('')}</div>`;
 }
 
 // ---------- goalie rankings ----------
@@ -120,6 +136,15 @@ function gameLog(apps) {
       <td>${pct(a.svPct)}</td><td>${f1(a.xga)}</td><td class="${sgnCls(a.gsax)}">${signed(a.gsax)}</td></tr>`).join('')}
     </tbody></table>`;
 }
+const gSortOptions = [['rank', 'Power rank'], ['svPct', 'Save %'], ['adjSvPct', 'Adjusted save %'], ['gsax', 'Goals saved above exp.'], ['gaa', 'GAA'], ['workloadGaa', 'GAA at avg workload'], ['shotsPerGame', 'Shots faced / game'], ['oppStrength', 'Opponent strength']];
+const gLowFirst = ['rank', 'gaa', 'workloadGaa', 'name', 'team'];
+function goalieCards(rows, i) {
+  return `<div class="mob m-list" id="gcards">${rows.map((r) => `<div class="m-card ${r.key === D.focusKey ? 'focus' : ''}" data-key="${esc(r.key)}">
+    <div class="m-top"><span class="rank">${r.rank}</span>${movement(r.rank, r.prevRank)}<div class="m-name"><b>${esc(r.name)}</b><span>${esc(r.team)} · ${r.rec} · ${r.gp} GP</span></div><div class="m-score"><b>${f1(r.score)}</b><span>score</span></div></div>
+    <div class="m-stats">${mStat(pct(r.svPct), 'SV%')}${mStat(pct(r.adjSvPct), 'Adj SV%')}${mStat(signed(r.gsax), 'GSAx', sgnCls(r.gsax))}${mStat(f1(r.shotsPerGame), 'Shots/GP')}</div>
+    ${state.open.has(r.key) ? `<div class="m-more"><div class="m-stats">${mStat(f2(r.gaa), 'GAA')}${mStat(f2(r.workloadGaa), 'Wkld GAA')}${mStat(f1(r.oppStrength), 'Opp Str')}${mStat(r.rec, 'W-L-OTL')}</div>${mobileGameLog(appsFor(r.key, i))}</div>` : '<div class="m-hint">Tap for game log</div>'}
+  </div>`).join('')}</div>`;
+}
 function renderGoalies() {
   const i = state.week;
   const rows = sortRows(goalieRows(i), state.sortG);
@@ -127,8 +152,11 @@ function renderGoalies() {
   const unranked = i === D.weeks.length - 1 ? D.goalies.filter((g) => !g.rank && g.gp > 0) : [];
   $('#tab-goalies').innerHTML = `
     <h2>Goalie power rankings · through ${weekLabel(D.weeks[i])}</h2>
-    <p class="note">Ranked mostly on save % adjusted for the shooters faced, plus goals saved above expected, goals allowed versus what each opponent usually scores, and schedule strength. Click a goalie for their game log; click a header to sort.</p>
-    <div class="tbl-wrap"><table id="gt"><thead><tr>${gCols.map(([k, l, t]) => `<th class="${['name', 'team'].includes(k) ? 'l ' : ''}${k !== 'mv' ? 'sortable' : ''} ${state.sortG.k === k ? 'sorted' : ''}" data-k="${k}" ${t ? `data-tip="${esc(t)}"` : ''}>${l}${state.sortG.k === k ? (state.sortG.dir > 0 ? ' ↑' : ' ↓') : ''}</th>`).join('')}</tr></thead>
+    <p class="note mob">Mostly adjusted save %, plus goals saved above expected, workload-adjusted GAA, and schedule strength. Tap a goalie for their game log.</p>
+    <p class="note desk">Ranked mostly on save % adjusted for the shooters faced, plus goals saved above expected, goals allowed versus what each opponent usually scores, and schedule strength. <span class="desk">Click a goalie for their game log; click a header to sort.</span></p>
+    ${sortSelect('gsort', gSortOptions, state.sortG)}
+    ${goalieCards(rows, i)}
+    <div class="tbl-wrap desk"><table id="gt"><thead><tr>${gCols.map(([k, l, t]) => `<th class="${['name', 'team'].includes(k) ? 'l ' : ''}${k !== 'mv' ? 'sortable' : ''} ${state.sortG.k === k ? 'sorted' : ''}" data-k="${k}" ${t ? `data-tip="${esc(t)}"` : ''}>${l}${state.sortG.k === k ? (state.sortG.dir > 0 ? ' ↑' : ' ↓') : ''}</th>`).join('')}</tr></thead>
     <tbody>${rows.map((r) => {
       const w = 8 + (92 * (r.score - minScore)) / (maxScore - minScore || 1);
       const open = state.open.has(r.key);
@@ -140,15 +168,21 @@ function renderGoalies() {
         ${open ? `<tr class="detail"><td colspan="${gCols.length}">${gameLog(appsFor(r.key, i))}</td></tr>` : ''}`;
     }).join('')}</tbody></table></div>
     ${unranked.length ? `<h3>Not enough minutes to rank yet</h3><p class="note">A goalie needs ${D.config.minMinutes}+ minutes and at least ${Math.round(D.config.minShareOfTeamMinutes * 100)}% of their team's minutes.</p>
-      <div class="tbl-wrap"><table><thead><tr><th class="l">Goalie</th><th class="l">Team</th><th>GP</th><th>Min</th><th>Shots</th><th>GA</th><th>SV%</th><th>GSAx</th></tr></thead><tbody>
+      <div class="mob m-list">${unranked.map((g) => `<div class="m-card"><div class="m-top"><div class="m-name"><b>${esc(g.name)}</b><span>${esc(g.teamAbbr)} · ${g.gp} GP · ${Math.round(g.min)} min</span></div></div>
+        <div class="m-stats">${mStat(g.shots, 'Shots')}${mStat(g.ga, 'GA')}${mStat(pct(g.svPct), 'SV%')}${mStat(signed(g.gsax), 'GSAx', sgnCls(g.gsax))}</div></div>`).join('')}</div>
+      <div class="tbl-wrap desk"><table><thead><tr><th class="l">Goalie</th><th class="l">Team</th><th>GP</th><th>Min</th><th>Shots</th><th>GA</th><th>SV%</th><th>GSAx</th></tr></thead><tbody>
       ${unranked.map((g) => `<tr><td class="l name">${esc(g.name)}</td><td class="l team">${esc(g.teamAbbr)}</td><td>${g.gp}</td><td>${Math.round(g.min)}</td><td>${g.shots}</td><td>${g.ga}</td><td>${pct(g.svPct)}</td><td class="${sgnCls(g.gsax)}">${signed(g.gsax)}</td></tr>`).join('')}
       </tbody></table></div>` : ''}`;
   $('#gt thead').onclick = (e) => {
     const th = e.target.closest('th.sortable'); if (!th) return;
     const k = th.dataset.k === 'team' ? 'team' : th.dataset.k;
-    const lowFirst = ['rank', 'gaa', 'workloadGaa', 'name', 'team'].includes(k);
-    state.sortG = state.sortG.k === k ? { k, dir: -state.sortG.dir } : { k, dir: lowFirst ? 1 : -1 };
+    state.sortG = state.sortG.k === k ? { k, dir: -state.sortG.dir } : { k, dir: gLowFirst.includes(k) ? 1 : -1 };
     renderGoalies();
+  };
+  $('#gsort').onchange = (e) => { const k = e.target.value; state.sortG = { k, dir: gLowFirst.includes(k) ? 1 : -1 }; renderGoalies(); };
+  $('#gcards').onclick = (e) => {
+    const c = e.target.closest('.m-card'); if (!c) return;
+    const k = c.dataset.key; state.open.has(k) ? state.open.delete(k) : state.open.add(k); renderGoalies();
   };
   $('#gt tbody').onclick = (e) => {
     const tr = e.target.closest('tr.row'); if (!tr) return;
@@ -167,7 +201,10 @@ function renderWeekend() {
     <div class="stars">${top.map((g, i) => `<div class="star"><div class="n">${['1st', '2nd', '3rd'][i]} star of the week</div><b>${esc(g.name)} <span class="team">${esc(g.teamAbbr)}</span></b>
       <div class="big ${sgnCls(g.gsax)}">${signed(g.gsax)} GSAx</div><div class="line">${g.saves} saves on ${g.shots} shots (${pct(g.svPct)})</div>
       <div class="line">${g.games.map(gameLine).join('<br>')}</div></div>`).join('')}</div>
-    <div class="tbl-wrap"><table><thead><tr><th>#</th><th class="l">Goalie</th><th class="l">Team</th><th class="l">Games</th><th>GP</th><th>Shots</th><th>Saves</th><th>GA</th><th>SV%</th><th data-tip="Goals an average goalie would allow on these shots from these opponents">xGA</th><th>GSAx</th></tr></thead>
+    <div class="mob m-list">${w.goalies.map((g, i) => `<div class="m-card ${g.key === D.focusKey ? 'focus' : ''}">
+      <div class="m-top"><span class="rank">${i + 1}</span><div class="m-name"><b>${esc(g.name)}</b><span>${esc(g.teamAbbr)} · ${g.saves} saves on ${g.shots} · ${pct(g.svPct)}</span></div><div class="m-score"><b class="${sgnCls(g.gsax)}">${signed(g.gsax)}</b><span>GSAx</span></div></div>
+      <div class="m-games">${g.games.map((x) => `${md(x.date)} ${x.home ? 'vs' : '@'} <b>${esc(x.opp)}</b>${x.oppRank ? ` <span class="team">#${x.oppRank}</span>` : ''} · ${x.decision || 'relief'} ${x.score} · ${x.saves}/${x.shots}`).join('<br>')}</div></div>`).join('')}</div>
+    <div class="tbl-wrap desk"><table><thead><tr><th>#</th><th class="l">Goalie</th><th class="l">Team</th><th class="l">Games</th><th>GP</th><th>Shots</th><th>Saves</th><th>GA</th><th>SV%</th><th data-tip="Goals an average goalie would allow on these shots from these opponents">xGA</th><th>GSAx</th></tr></thead>
     <tbody>${w.goalies.map((g, i) => `<tr class="${g.key === D.focusKey ? 'focus' : ''}"><td class="rank">${i + 1}</td><td class="l name">${esc(g.name)}</td><td class="l team">${esc(g.teamAbbr)}</td>
       <td class="l">${g.games.map((x) => `${x.home ? 'vs' : '@'} ${esc(x.opp)} <span class="team">${x.decision || '–'} ${x.score}</span>`).join('<br>')}</td>
       <td>${g.gp}</td><td>${g.shots}</td><td>${g.saves}</td><td>${g.ga}</td><td>${pct(g.svPct)}</td><td>${f1(g.xga)}</td><td class="${sgnCls(g.gsax)}"><b>${signed(g.gsax)}</b></td></tr>`).join('')}</tbody></table></div>
@@ -194,6 +231,15 @@ const tCols = [
   ['vsTopPct', 'vs Top', 'Record against the top third of the league (by current rank)'], ['bestWinRank', 'Best win', 'Highest-ranked team beaten'],
   ['oppPtsPct', 'Opp Win%', "Opponents' win % in their other games (OT/SO losses count as half a win)"], ['sos', 'SOS', 'Strength of schedule: average Adj Goal Diff of opponents faced'], ['score', 'Power score', ''],
 ];
+const tSortOptions = [['rank', 'Power rank'], ['ptsPct', 'Win %'], ['net', 'Adj goal diff'], ['krach', 'Results rating'], ['vsTopPct', 'Record vs top teams'], ['oppPtsPct', 'Opponent win %'], ['sos', 'Strength of schedule'], ['gfpg', 'Goals for / game'], ['gapg', 'Goals against / game']];
+const tLowFirst = ['rank', 'name', 'gapg', 'sapg'];
+function teamCards(rows) {
+  return `<div class="mob m-list" id="tcards">${rows.map((t) => `<div class="m-card ${t.abbr === D.config.focusTeam ? 'focus' : ''}" data-id="${t.id}">
+    <div class="m-top"><span class="rank">${t.rank}</span>${movement(t.rank, t.prevRank)}<div class="m-name"><b>${esc(t.name)}</b><span>${esc(t.abbr)} · ${t.rec}${t.bestWin ? ` · best win ${esc(t.bestWin.abbr)} #${t.bestWin.rank}` : ''}</span></div><div class="m-score"><b>${f1(t.score)}</b><span>score</span></div></div>
+    <div class="m-stats">${mStat(pct(t.ptsPct), 'Win%')}${mStat(signed(t.net, 2), 'Adj GD', sgnCls(t.net))}${mStat(f2(t.krach), 'Results')}${mStat(`${t.vsTop.w}-${t.vsTop.l}-${t.vsTop.otl}`, 'vs Top ' + t.topN)}</div>
+    ${state.openT.has(t.id) ? `<div class="m-more"><div class="m-stats">${mStat(f2(t.gfpg), 'GF/GP')}${mStat(f2(t.gapg), 'GA/GP')}${mStat(f1(t.sfpg), 'SF/GP')}${mStat(f1(t.sapg), 'SA/GP')}</div><div class="m-stats">${mStat(pct(t.oppPtsPct), 'Opp Win%')}${mStat(signed(t.sos, 2), 'SOS', sgnCls(t.sos))}${mStat(f2(t.offRating), 'Off')}${mStat(f2(t.defRating), 'Def')}</div></div>` : '<div class="m-hint">Tap for more</div>'}
+  </div>`).join('')}</div>`;
+}
 function renderTeams() {
   const i = state.week, prev = D.snapshots[i - 1];
   const rows = sortRows(D.snapshots[i].teams.map((t) => {
@@ -202,26 +248,37 @@ function renderTeams() {
   }), state.sortT);
   $('#tab-teams').innerHTML = `
     <h2>Team power rankings · through ${weekLabel(D.weeks[i])}</h2>
-    <p class="note">Ratings are schedule-adjusted: beating a strong team counts more than beating a weak one, and goals per game are capped at ${D.config.goalCapPerGame} so one blowout can't define a team. Power score is ${Math.round(D.weights.teamResults * 100)}% results rating (quality of wins), ${Math.round(D.weights.teamPoints * 100)}% win %, and ${Math.round(D.weights.teamNet * 100)}% adjusted goal differential. "vs Top" is the record against the top ${D.teams[0] ? D.teams[0].topN : 5}. These ratings also set the opponent strength used for goalies.</p>
-    <div class="tbl-wrap"><table id="tt"><thead><tr>${tCols.map(([k, l, t]) => `<th class="${k === 'name' ? 'l ' : ''}${k !== 'mv' ? 'sortable' : ''} ${state.sortT.k === k ? 'sorted' : ''}" data-k="${k}" ${t ? `data-tip="${esc(t)}"` : ''}>${l}</th>`).join('')}</tr></thead>
+    <p class="note mob">Power score = ${Math.round(D.weights.teamResults * 100)}% quality of wins, ${Math.round(D.weights.teamPoints * 100)}% win %, ${Math.round(D.weights.teamNet * 100)}% adjusted goal differential, all schedule-adjusted. Tap a team for more; details on the How tab.</p>
+    <p class="note desk">Ratings are schedule-adjusted: beating a strong team counts more than beating a weak one, and goals per game are capped at ${D.config.goalCapPerGame} so one blowout can't define a team. Power score is ${Math.round(D.weights.teamResults * 100)}% results rating (quality of wins), ${Math.round(D.weights.teamPoints * 100)}% win %, and ${Math.round(D.weights.teamNet * 100)}% adjusted goal differential. "vs Top" is the record against the top ${D.teams[0] ? D.teams[0].topN : 5}. These ratings also set the opponent strength used for goalies.</p>
+    ${sortSelect('tsort', tSortOptions, state.sortT)}
+    ${teamCards(rows)}
+    <div class="tbl-wrap desk"><table id="tt"><thead><tr>${tCols.map(([k, l, t]) => `<th class="${k === 'name' ? 'l ' : ''}${k !== 'mv' ? 'sortable' : ''} ${state.sortT.k === k ? 'sorted' : ''}" data-k="${k}" ${t ? `data-tip="${esc(t)}"` : ''}>${l}</th>`).join('')}</tr></thead>
     <tbody>${rows.map((t) => `<tr class="${t.abbr === D.config.focusTeam ? 'focus' : ''}"><td class="rank">${t.rank}</td><td>${movement(t.rank, t.prevRank)}</td><td class="l name">${esc(t.name)} <span class="team">${esc(t.abbr)}</span></td>
       <td>${t.rec}</td><td>${pct(t.ptsPct)}</td><td>${f2(t.gfpg)}</td><td>${f2(t.gapg)}</td><td>${f1(t.sfpg)}</td><td>${f1(t.sapg)}</td>
       <td class="${sgnCls(t.net)}">${signed(t.net, 2)}</td><td>${f2(t.krach)}</td><td>${t.vsTop.w}-${t.vsTop.l}-${t.vsTop.otl}</td><td class="l">${t.bestWin ? `${esc(t.bestWin.abbr)} <span class="team">#${t.bestWin.rank}</span>` : '<span class="team">–</span>'}</td>
       <td>${pct(t.oppPtsPct)}</td><td class="${sgnCls(t.sos)}">${signed(t.sos, 2)}</td><td>${f1(t.score)}</td></tr>`).join('')}</tbody></table></div>`;
   $('#tt thead').onclick = (e) => {
     const th = e.target.closest('th.sortable'); if (!th) return;
-    const k = th.dataset.k, lowFirst = ['rank', 'name', 'gapg', 'sapg'].includes(k);
-    state.sortT = state.sortT.k === k ? { k, dir: -state.sortT.dir } : { k, dir: lowFirst ? 1 : -1 };
+    const k = th.dataset.k;
+    state.sortT = state.sortT.k === k ? { k, dir: -state.sortT.dir } : { k, dir: tLowFirst.includes(k) ? 1 : -1 };
     renderTeams();
+  };
+  $('#tsort').onchange = (e) => { const k = e.target.value; state.sortT = { k, dir: tLowFirst.includes(k) ? 1 : -1 }; renderTeams(); };
+  $('#tcards').onclick = (e) => {
+    const c = e.target.closest('.m-card'); if (!c) return;
+    const id = c.dataset.id; state.openT.has(id) ? state.openT.delete(id) : state.openT.add(id); renderTeams();
   };
 }
 
 // ---------- focus goalie ----------
+// Charts draw in a narrower coordinate space on phones so their text stays legible.
+const chartWidth = () => (window.matchMedia('(max-width: 640px)').matches ? 360 : 520);
 function rankLine(values, i) {
   // Single-series line of power rank by week, rank 1 at top.
-  const W = 520, H = 200, L = 34, R = 14, T = 14, B = 28;
+  const W = chartWidth(), H = 200, L = 34, R = 14, T = 14, B = 28;
   const n = values.length, maxRank = Math.max(...D.snapshots.map((s) => s.goalies.length));
-  const x = (j) => L + (n === 1 ? (W - L - R) / 2 : (j * (W - L - R)) / (n - 1));
+  const pad = 16; // keep the first and last points clear of the axis labels
+  const x = (j) => L + pad + (n === 1 ? (W - L - R - 2 * pad) / 2 : (j * (W - L - R - 2 * pad)) / (n - 1));
   const y = (r) => T + ((r - 1) * (H - T - B)) / (maxRank - 1 || 1);
   const ticks = [1, 5, 10, 15, 20, 25, 30].filter((t) => t <= maxRank);
   const pts = values.map((v, j) => (v ? [x(j), y(v.rank), v, j] : null)).filter(Boolean);
@@ -237,11 +294,13 @@ function rankLine(values, i) {
 }
 function gsaxBars(apps) {
   // Diverging bars: GSAx per game around zero.
-  const W = 520, H = 200, L = 34, R = 10, T = 12, B = 34;
+  const W = chartWidth(), H = 200, L = 34, R = 10, T = 12, B = 34;
   const n = apps.length, m = Math.max(2, ...apps.map((a) => Math.abs(a.gsax)));
   const lim = Math.ceil(m);
   const y = (v) => T + ((lim - v) * (H - T - B)) / (2 * lim);
   const bw = Math.min(46, ((W - L - R) / n) * 0.6);
+  // One label per ~60px so a full season of games stays readable.
+  const labelEvery = Math.max(1, Math.ceil(n / Math.floor((W - L - R) / 60)));
   const cx = (j) => L + ((j + 0.5) * (W - L - R)) / n;
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Goals saved above expected by game">
     ${[-lim, 0, lim].map((t) => `<line class="${t === 0 ? 'axis0' : 'grid'}" x1="${L}" x2="${W - R}" y1="${y(t)}" y2="${y(t)}"/><text x="${L - 6}" y="${y(t) + 4}" text-anchor="end">${t > 0 ? '+' : ''}${t}</text>`).join('')}
@@ -254,7 +313,7 @@ function gsaxBars(apps) {
         ? `M${x0},${y(0)}V${top + r}Q${x0},${top} ${x0 + r},${top}H${x0 + bw - r}Q${x0 + bw},${top} ${x0 + bw},${top + r}V${y(0)}Z`
         : `M${x0},${y(0)}V${top + h - r}Q${x0},${top + h} ${x0 + r},${top + h}H${x0 + bw - r}Q${x0 + bw},${top + h} ${x0 + bw},${top + h - r}V${y(0)}Z`;
       return `<path d="${d}" fill="${pos ? 'var(--accent)' : 'var(--neg)'}"/>
-        <text x="${cx(j)}" y="${H - 20}" text-anchor="middle">${a.home ? 'vs' : '@'} ${esc(a.oppAbbr)}</text><text x="${cx(j)}" y="${H - 7}" text-anchor="middle">${md(a.date)}</text>
+        ${j % labelEvery === 0 ? `<text x="${cx(j)}" y="${H - 20}" text-anchor="middle">${a.home ? 'vs' : '@'} ${esc(a.oppAbbr)}</text><text x="${cx(j)}" y="${H - 7}" text-anchor="middle">${md(a.date)}</text>` : ''}
         <rect x="${cx(j) - (W - L - R) / n / 2}" y="${T}" width="${(W - L - R) / n}" height="${H - T - B}" fill="transparent"
           data-tip="${esc(md(a.date))} ${a.home ? 'vs' : '@'} ${esc(a.oppAbbr)} (${a.decision || 'relief'} ${a.score})<br>${a.saves} saves on ${a.shots} · expected GA ${f1(a.xga)}, allowed ${a.ga}<br><b>${signed(a.gsax)} GSAx</b>"/>`;
     }).join('')}
@@ -262,7 +321,7 @@ function gsaxBars(apps) {
 }
 function workloadScatter(snap, focusKey) {
   // GAA (y) against shots faced per game (x); the line is a league-average goalie.
-  const W = 520, H = 260, L = 34, R = 14, T = 12, B = 32;
+  const W = chartWidth(), H = 260, L = 34, R = 14, T = 12, B = 32;
   const pts = snap.goalies.filter((g) => g.gaa != null);
   const xMax = Math.ceil((Math.max(...pts.map((g) => g.shotsPerGame)) + 4) / 10) * 10;
   const yMax = Math.ceil(Math.max(...pts.map((g) => g.gaa)) + 1);
@@ -274,7 +333,7 @@ function workloadScatter(snap, focusKey) {
   return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Goals against per game versus shots faced per game">
     ${yt.map((v) => `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end">${v}</text>`).join('')}
     ${xt.map((v) => `<text x="${x(v)}" y="${H - B + 16}" text-anchor="middle">${v}</text>`).join('')}
-    <text x="${W - R}" y="${H - 4}" text-anchor="end">shots faced per game →</text>
+    <text x="${W - R}" y="${H - B - 6}" text-anchor="end">shots faced per game →</text>
     <text x="${L + 4}" y="${T + 8}">GAA ↑</text>
     <line x1="${x(0)}" y1="${y(0)}" x2="${x(lineEnd)}" y2="${y(lineEnd * D.league.sh)}" stroke="var(--text-2)" stroke-width="1.5" stroke-dasharray="5 4"/>
     <text x="${x(lineEnd)}" y="${y(lineEnd * D.league.sh) - 8}" text-anchor="end">league-avg goalie</text>
@@ -329,12 +388,12 @@ function renderFocus() {
       ${best ? `<p><b>Best game:</b> ${md(best.date)} ${best.home ? 'vs' : '@'} ${esc(best.oppAbbr)}, ${best.saves} saves on ${best.shots} shots (${signed(best.gsax)} GSAx${best.decision ? ', ' + best.decision + ' ' + best.score : ''}).</p>` : ''}` : '<p>No games yet this season.</p>'}
     </div>
     <div class="charts">
-      <div class="chart"><h4>Power rank by week</h4><p>Up is better. Hover a point for details.</p>${rankLine(focus.history.slice(0, i + 1))}</div>
+      <div class="chart"><h4>Power rank by week</h4><p>Up is better. Tap or hover a point for details.</p>${rankLine(focus.history.slice(0, i + 1))}</div>
       <div class="chart"><h4>Goals against vs workload</h4><p>Every ranked goalie. Below the line = fewer goals than an average goalie would allow on that many shots.</p>${workloadScatter(snap, focus.key)}</div>
       <div class="chart"><h4>Goals saved above expected, by game</h4><p>Blue: saved more than an average goalie would. Orange: fewer.</p>${apps.length ? gsaxBars(apps) : '<p class="empty">No games yet.</p>'}</div>
     </div>
     <h3>Game log</h3>
-    <div class="tbl-wrap">${gameLog(apps)}</div>
+    <div class="tbl-wrap desk">${gameLog(apps)}</div><div class="mob">${mobileGameLog(apps)}</div>
     ${next.length ? `<h3>Next up for ${esc(focus.teamAbbr)}</h3><div class="scores">${next.map((g) => {
       const opp = g.home === focus.teamAbbr ? g.away : g.home, oppT = D.teams.find((t) => t.abbr === opp);
       return `<div class="score"><div class="d">${md(g.date)}</div><div>${g.home === focus.teamAbbr ? 'vs' : '@'} <b>${esc(opp)}</b>${oppT ? ` <span class="team">#${oppT.rank}, ${oppT.w}-${oppT.l}-${oppT.otl}</span>` : ''}</div></div>`;
@@ -390,3 +449,5 @@ function render() {
 renderHeader();
 render();
 setTab(state.tab);
+// Redraw when crossing the phone breakpoint (e.g. rotating a tablet) so charts pick the right width.
+window.matchMedia('(max-width: 640px)').addEventListener('change', render);
