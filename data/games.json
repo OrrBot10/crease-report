@@ -1,5 +1,5 @@
 {
- "scrapedAt": "2026-11-13T11:51:24.032Z",
+ "scrapedAt": "2026-11-14T06:16:29.878Z",
  "games": [
   {
    "id": "45800076",
@@ -1882,6 +1882,112 @@
    "id": "45800114",
    "date": "2026-11-13",
    "venue": "Coral Ridge Ice Arena",
+   "status": "Final",
+   "away": {
+    "id": "9587098",
+    "abbr": "DBQ",
+    "name": "Dubuque",
+    "score": 13
+   },
+   "home": {
+    "id": "9587162",
+    "abbr": "IC",
+    "name": "Iowa City",
+    "score": 0
+   },
+   "final": true,
+   "periods": [
+    "1",
+    "2",
+    "3"
+   ],
+   "ot": false,
+   "so": false,
+   "goalies": [
+    {
+     "teamId": "9587098",
+     "playerId": "79057366",
+     "name": "Trevor Breen",
+     "number": "35",
+     "min": 51,
+     "shots": 7,
+     "ga": 0,
+     "saves": 7
+    },
+    {
+     "teamId": "9587162",
+     "playerId": "79535749",
+     "name": "Christopher Surine",
+     "number": "30",
+     "min": 9.333333333333334,
+     "shots": 22,
+     "ga": 1,
+     "saves": 21
+    },
+    {
+     "teamId": "9587162",
+     "playerId": "79535751",
+     "name": "Corbin Sartori",
+     "number": "39",
+     "min": 41.666666666666664,
+     "shots": 47,
+     "ga": 12,
+     "saves": 35
+    }
+   ]
+  },
+  {
+   "id": "45800496",
+   "date": "2026-11-13",
+   "venue": "ImOn Ice, Rockford Road Southwest, Cedar Rapids, IA, USA",
+   "status": "Final",
+   "away": {
+    "id": "9587104",
+    "abbr": "QC",
+    "name": "Quad City",
+    "score": 4
+   },
+   "home": {
+    "id": "9587095",
+    "abbr": "CR",
+    "name": "Cedar Rapids",
+    "score": 2
+   },
+   "final": true,
+   "periods": [
+    "1",
+    "2",
+    "3"
+   ],
+   "ot": false,
+   "so": false,
+   "goalies": [
+    {
+     "teamId": "9587104",
+     "playerId": "79057521",
+     "name": "Brenden Orr",
+     "number": "64",
+     "min": 51,
+     "shots": 18,
+     "ga": 2,
+     "saves": 16
+    },
+    {
+     "teamId": "9587095",
+     "playerId": "79539884",
+     "name": "Roman Carter",
+     "number": "35",
+     "min": 51,
+     "shots": 27,
+     "ga": 4,
+     "saves": 23
+    }
+   ]
+  },
+  {
+   "id": "45800115",
+   "date": "2026-11-14",
+   "venue": "ImOn Ice",
    "status": "",
    "away": {
     "id": "9587098",
@@ -1889,16 +1995,33 @@
     "name": "Dubuque"
    },
    "home": {
-    "id": "9587162",
-    "abbr": "IC",
-    "name": "Iowa City"
+    "id": "9587095",
+    "abbr": "CR",
+    "name": "Cedar Rapids"
    },
    "final": false
   },
   {
-   "id": "45800496",
-   "date": "2026-11-13",
-   "venue": "ImOn Ice, Rockford Road Southwest, Cedar Rapids, IA, USA",
+   "id": "45800116",
+   "date": "2026-11-14",
+   "venue": "Sidner Ice Arena",
+   "status": "",
+   "away": {
+    "id": "9587105",
+    "abbr": "SC",
+    "name": "Sioux City"
+   },
+   "home": {
+    "id": "9587099",
+    "abbr": "FRE",
+    "name": "Fremont"
+   },
+   "final": false
+  },
+  {
+   "id": "45800117",
+   "date": "2026-11-14",
+   "venue": "Lakes Ice Arena",
    "status": "",
    "away": {
     "id": "9587104",
@@ -1906,9 +2029,77 @@
     "name": "Quad City"
    },
    "home": {
-    "id": "9587095",
-    "abbr": "CR",
-    "name": "Cedar Rapids"
+    "id": "9587094",
+    "abbr": "BOJI",
+    "name": "Boji"
+   },
+   "final": false
+  },
+  {
+   "id": "45800118",
+   "date": "2026-11-14",
+   "venue": "Kansas City Ice Center and Pavilion",
+   "status": "",
+   "away": {
+    "id": "9587096",
+    "abbr": "CAP",
+    "name": "DM Caps"
+   },
+   "home": {
+    "id": "9587100",
+    "abbr": "KC",
+    "name": "Kansas City"
+   },
+   "final": false
+  },
+  {
+   "id": "45800119",
+   "date": "2026-11-14",
+   "venue": "Young Arena",
+   "status": "",
+   "away": {
+    "id": "9587162",
+    "abbr": "IC",
+    "name": "Iowa City"
+   },
+   "home": {
+    "id": "9587106",
+    "abbr": "WAT",
+    "name": "Waterloo"
+   },
+   "final": false
+  },
+  {
+   "id": "45800120",
+   "date": "2026-11-14",
+   "venue": "RecPlex (Rink 1)",
+   "status": "",
+   "away": {
+    "id": "9587103",
+    "abbr": "OJL",
+    "name": "Omaha"
+   },
+   "home": {
+    "id": "9587097",
+    "abbr": "OAKS",
+    "name": "DM Oak Leafs"
+   },
+   "final": false
+  },
+  {
+   "id": "45800121",
+   "date": "2026-11-14",
+   "venue": "Mason City Arena",
+   "status": "",
+   "away": {
+    "id": "9587101",
+    "abbr": "LIN",
+    "name": "Lincoln"
+   },
+   "home": {
+    "id": "9587102",
+    "abbr": "MC",
+    "name": "Mason City"
    },
    "final": false
   }
