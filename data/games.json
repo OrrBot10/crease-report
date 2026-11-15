@@ -1,5 +1,5 @@
 {
- "scrapedAt": "2026-11-14T11:33:17.324Z",
+ "scrapedAt": "2026-11-15T06:19:07.294Z",
  "games": [
   {
    "id": "45800076",
@@ -1988,69 +1988,193 @@
    "id": "45800115",
    "date": "2026-11-14",
    "venue": "ImOn Ice",
-   "status": "",
+   "status": "Final",
    "away": {
     "id": "9587098",
     "abbr": "DBQ",
-    "name": "Dubuque"
+    "name": "Dubuque",
+    "score": 6
    },
    "home": {
     "id": "9587095",
     "abbr": "CR",
-    "name": "Cedar Rapids"
+    "name": "Cedar Rapids",
+    "score": 2
    },
-   "final": false
+   "final": true,
+   "periods": [
+    "1",
+    "2",
+    "3"
+   ],
+   "ot": false,
+   "so": false,
+   "goalies": [
+    {
+     "teamId": "9587098",
+     "playerId": "79057496",
+     "name": "Andy Schell",
+     "number": "1",
+     "min": 51,
+     "shots": 22,
+     "ga": 2,
+     "saves": 20
+    },
+    {
+     "teamId": "9587095",
+     "playerId": "79539884",
+     "name": "Roman Carter",
+     "number": "35",
+     "min": 51,
+     "shots": 34,
+     "ga": 6,
+     "saves": 28
+    }
+   ]
   },
   {
    "id": "45800116",
    "date": "2026-11-14",
    "venue": "Sidner Ice Arena",
-   "status": "",
+   "status": "Final",
    "away": {
     "id": "9587105",
     "abbr": "SC",
-    "name": "Sioux City"
+    "name": "Sioux City",
+    "score": 3
    },
    "home": {
     "id": "9587099",
     "abbr": "FRE",
-    "name": "Fremont"
+    "name": "Fremont",
+    "score": 4
    },
-   "final": false
+   "final": true,
+   "periods": [
+    "1",
+    "2",
+    "3"
+   ],
+   "ot": false,
+   "so": false,
+   "goalies": [
+    {
+     "teamId": "9587105",
+     "playerId": "79057349",
+     "name": "Brayson Bergh",
+     "number": "10",
+     "min": 50.68333333333333,
+     "shots": 21,
+     "ga": 4,
+     "saves": 17
+    },
+    {
+     "teamId": "9587099",
+     "playerId": "79535659",
+     "name": "KC Kern",
+     "number": "38",
+     "min": 51,
+     "shots": 30,
+     "ga": 3,
+     "saves": 27
+    }
+   ]
   },
   {
    "id": "45800117",
    "date": "2026-11-14",
    "venue": "Lakes Ice Arena",
-   "status": "",
+   "status": "Final",
    "away": {
     "id": "9587104",
     "abbr": "QC",
-    "name": "Quad City"
+    "name": "Quad City",
+    "score": 1
    },
    "home": {
     "id": "9587094",
     "abbr": "BOJI",
-    "name": "Boji"
+    "name": "Boji",
+    "score": 4
    },
-   "final": false
+   "final": true,
+   "periods": [
+    "1",
+    "2",
+    "3"
+   ],
+   "ot": false,
+   "so": false,
+   "goalies": [
+    {
+     "teamId": "9587104",
+     "playerId": "79057521",
+     "name": "Brenden Orr",
+     "number": "64",
+     "min": 51,
+     "shots": 26,
+     "ga": 3,
+     "saves": 23
+    },
+    {
+     "teamId": "9587094",
+     "playerId": "79057364",
+     "name": "Karter Wulf",
+     "number": "35",
+     "min": 51,
+     "shots": 25,
+     "ga": 1,
+     "saves": 24
+    }
+   ]
   },
   {
    "id": "45800118",
    "date": "2026-11-14",
    "venue": "Kansas City Ice Center and Pavilion",
-   "status": "",
+   "status": "Final",
    "away": {
     "id": "9587096",
     "abbr": "CAP",
-    "name": "DM Caps"
+    "name": "DM Caps",
+    "score": 3
    },
    "home": {
     "id": "9587100",
     "abbr": "KC",
-    "name": "Kansas City"
+    "name": "Kansas City",
+    "score": 0
    },
-   "final": false
+   "final": true,
+   "periods": [
+    "1",
+    "2",
+    "3"
+   ],
+   "ot": false,
+   "so": false,
+   "goalies": [
+    {
+     "teamId": "9587096",
+     "playerId": "79057594",
+     "name": "Tighe Samms",
+     "number": "30",
+     "min": 51,
+     "shots": 9,
+     "ga": 0,
+     "saves": 9
+    },
+    {
+     "teamId": "9587100",
+     "playerId": "79057317",
+     "name": "Kamden Kruggel",
+     "number": "35",
+     "min": 51,
+     "shots": 46,
+     "ga": 3,
+     "saves": 43
+    }
+   ]
   },
   {
    "id": "45800119",
@@ -2073,6 +2197,147 @@
    "id": "45800120",
    "date": "2026-11-14",
    "venue": "RecPlex (Rink 1)",
+   "status": "Final",
+   "away": {
+    "id": "9587103",
+    "abbr": "OJL",
+    "name": "Omaha",
+    "score": 4
+   },
+   "home": {
+    "id": "9587097",
+    "abbr": "OAKS",
+    "name": "DM Oak Leafs",
+    "score": 5
+   },
+   "final": true,
+   "periods": [
+    "1",
+    "2",
+    "3",
+    "OT1"
+   ],
+   "ot": true,
+   "so": false,
+   "goalies": [
+    {
+     "teamId": "9587103",
+     "playerId": "79057647",
+     "name": "Izaac Seidel",
+     "number": "70",
+     "min": 52.2,
+     "shots": 27,
+     "ga": 5,
+     "saves": 22
+    },
+    {
+     "teamId": "9587097",
+     "playerId": "79057555",
+     "name": "Zachary Lunders",
+     "number": "30",
+     "min": 52.2,
+     "shots": 27,
+     "ga": 4,
+     "saves": 23
+    }
+   ]
+  },
+  {
+   "id": "45800121",
+   "date": "2026-11-14",
+   "venue": "Mason City Arena",
+   "status": "Final",
+   "away": {
+    "id": "9587101",
+    "abbr": "LIN",
+    "name": "Lincoln",
+    "score": 6
+   },
+   "home": {
+    "id": "9587102",
+    "abbr": "MC",
+    "name": "Mason City",
+    "score": 2
+   },
+   "final": true,
+   "periods": [
+    "1",
+    "2",
+    "3"
+   ],
+   "ot": false,
+   "so": false,
+   "goalies": [
+    {
+     "teamId": "9587101",
+     "playerId": "79057373",
+     "name": "Matthew Travis",
+     "number": "1",
+     "min": 51,
+     "shots": 18,
+     "ga": 2,
+     "saves": 16
+    },
+    {
+     "teamId": "9587102",
+     "playerId": "79057657",
+     "name": "Alex Mckibben",
+     "number": "1",
+     "min": 17,
+     "shots": 0,
+     "ga": 0,
+     "saves": 0
+    },
+    {
+     "teamId": "9587102",
+     "playerId": "79057356",
+     "name": "Jarrett Servantez",
+     "number": "35",
+     "min": 34,
+     "shots": 35,
+     "ga": 6,
+     "saves": 29
+    }
+   ]
+  },
+  {
+   "id": "45800122",
+   "date": "2026-11-15",
+   "venue": "Lakes Ice Arena",
+   "status": "",
+   "away": {
+    "id": "9587104",
+    "abbr": "QC",
+    "name": "Quad City"
+   },
+   "home": {
+    "id": "9587094",
+    "abbr": "BOJI",
+    "name": "Boji"
+   },
+   "final": false
+  },
+  {
+   "id": "45800123",
+   "date": "2026-11-15",
+   "venue": "Mason City Arena",
+   "status": "",
+   "away": {
+    "id": "9587101",
+    "abbr": "LIN",
+    "name": "Lincoln"
+   },
+   "home": {
+    "id": "9587102",
+    "abbr": "MC",
+    "name": "Mason City"
+   },
+   "final": false
+  },
+  {
+   "id": "45800124",
+   "date": "2026-11-15",
+   "venue": "RecPlex (Rink 1)",
    "status": "",
    "away": {
     "id": "9587103",
@@ -2087,19 +2352,19 @@
    "final": false
   },
   {
-   "id": "45800121",
-   "date": "2026-11-14",
-   "venue": "Mason City Arena",
+   "id": "45800125",
+   "date": "2026-11-15",
+   "venue": "Sidner Ice Arena",
    "status": "",
    "away": {
-    "id": "9587101",
-    "abbr": "LIN",
-    "name": "Lincoln"
+    "id": "9587105",
+    "abbr": "SC",
+    "name": "Sioux City"
    },
    "home": {
-    "id": "9587102",
-    "abbr": "MC",
-    "name": "Mason City"
+    "id": "9587099",
+    "abbr": "FRE",
+    "name": "Fremont"
    },
    "final": false
   }
