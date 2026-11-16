@@ -1,5 +1,5 @@
 {
- "scrapedAt": "2026-11-15T11:36:31.583Z",
+ "scrapedAt": "2026-11-16T07:04:21.733Z",
  "games": [
   {
    "id": "45800076",
@@ -2304,67 +2304,209 @@
    "id": "45800122",
    "date": "2026-11-15",
    "venue": "Lakes Ice Arena",
-   "status": "",
+   "status": "Final",
    "away": {
     "id": "9587104",
     "abbr": "QC",
-    "name": "Quad City"
+    "name": "Quad City",
+    "score": 0
    },
    "home": {
     "id": "9587094",
     "abbr": "BOJI",
-    "name": "Boji"
+    "name": "Boji",
+    "score": 4
    },
-   "final": false
+   "final": true,
+   "periods": [
+    "1",
+    "2",
+    "3"
+   ],
+   "ot": false,
+   "so": false,
+   "goalies": [
+    {
+     "teamId": "9587104",
+     "playerId": "79057521",
+     "name": "Brenden Orr",
+     "number": "64",
+     "min": 51,
+     "shots": 32,
+     "ga": 4,
+     "saves": 28
+    },
+    {
+     "teamId": "9587094",
+     "playerId": "79057364",
+     "name": "Karter Wulf",
+     "number": "35",
+     "min": 51,
+     "shots": 12,
+     "ga": 0,
+     "saves": 12
+    }
+   ]
   },
   {
    "id": "45800123",
    "date": "2026-11-15",
    "venue": "Mason City Arena",
-   "status": "",
+   "status": "Final",
    "away": {
     "id": "9587101",
     "abbr": "LIN",
-    "name": "Lincoln"
+    "name": "Lincoln",
+    "score": 4
    },
    "home": {
     "id": "9587102",
     "abbr": "MC",
-    "name": "Mason City"
+    "name": "Mason City",
+    "score": 1
    },
-   "final": false
+   "final": true,
+   "periods": [
+    "1",
+    "2",
+    "3"
+   ],
+   "ot": false,
+   "so": false,
+   "goalies": [
+    {
+     "teamId": "9587101",
+     "playerId": "79057373",
+     "name": "Matthew Travis",
+     "number": "1",
+     "min": 51,
+     "shots": 21,
+     "ga": 1,
+     "saves": 20
+    },
+    {
+     "teamId": "9587102",
+     "playerId": "79057657",
+     "name": "Alex Mckibben",
+     "number": "1",
+     "min": 51,
+     "shots": 36,
+     "ga": 4,
+     "saves": 32
+    }
+   ]
   },
   {
    "id": "45800124",
    "date": "2026-11-15",
    "venue": "RecPlex (Rink 1)",
-   "status": "",
+   "status": "Final",
    "away": {
     "id": "9587103",
     "abbr": "OJL",
-    "name": "Omaha"
+    "name": "Omaha",
+    "score": 1
    },
    "home": {
     "id": "9587097",
     "abbr": "OAKS",
-    "name": "DM Oak Leafs"
+    "name": "DM Oak Leafs",
+    "score": 2
    },
-   "final": false
+   "final": true,
+   "periods": [
+    "1",
+    "2",
+    "3",
+    "OT1"
+   ],
+   "ot": true,
+   "so": false,
+   "goalies": [
+    {
+     "teamId": "9587103",
+     "playerId": "79057647",
+     "name": "Izaac Seidel",
+     "number": "70",
+     "min": 55.35,
+     "shots": 26,
+     "ga": 2,
+     "saves": 24
+    },
+    {
+     "teamId": "9587097",
+     "playerId": "79057555",
+     "name": "Zachary Lunders",
+     "number": "30",
+     "min": 55.35,
+     "shots": 43,
+     "ga": 1,
+     "saves": 42
+    }
+   ]
   },
   {
    "id": "45800125",
    "date": "2026-11-15",
    "venue": "Sidner Ice Arena",
-   "status": "",
+   "status": "Final",
    "away": {
     "id": "9587105",
     "abbr": "SC",
-    "name": "Sioux City"
+    "name": "Sioux City",
+    "score": 0
    },
    "home": {
     "id": "9587099",
     "abbr": "FRE",
-    "name": "Fremont"
+    "name": "Fremont",
+    "score": 4
+   },
+   "final": true,
+   "periods": [
+    "1",
+    "2",
+    "3"
+   ],
+   "ot": false,
+   "so": false,
+   "goalies": [
+    {
+     "teamId": "9587105",
+     "playerId": "79057349",
+     "name": "Brayson Bergh",
+     "number": "10",
+     "min": 51,
+     "shots": 27,
+     "ga": 4,
+     "saves": 23
+    },
+    {
+     "teamId": "9587099",
+     "playerId": "79535659",
+     "name": "KC Kern",
+     "number": "38",
+     "min": 51,
+     "shots": 24,
+     "ga": 0,
+     "saves": 24
+    }
+   ]
+  },
+  {
+   "id": "45800126",
+   "date": "2026-11-19",
+   "venue": "Young Arena",
+   "status": "",
+   "away": {
+    "id": "9587102",
+    "abbr": "MC",
+    "name": "Mason City"
+   },
+   "home": {
+    "id": "9587106",
+    "abbr": "WAT",
+    "name": "Waterloo"
    },
    "final": false
   }
