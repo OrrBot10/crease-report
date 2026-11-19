@@ -1,5 +1,5 @@
 {
- "scrapedAt": "2026-11-18T11:55:46.862Z",
+ "scrapedAt": "2026-11-19T11:54:18.430Z",
  "games": [
   {
    "id": "45800076",
@@ -2177,23 +2177,6 @@
    ]
   },
   {
-   "id": "45800119",
-   "date": "2026-11-14",
-   "venue": "Young Arena",
-   "status": "",
-   "away": {
-    "id": "9587162",
-    "abbr": "IC",
-    "name": "Iowa City"
-   },
-   "home": {
-    "id": "9587106",
-    "abbr": "WAT",
-    "name": "Waterloo"
-   },
-   "final": false
-  },
-  {
    "id": "45800120",
    "date": "2026-11-14",
    "venue": "RecPlex (Rink 1)",
@@ -2502,6 +2485,23 @@
     "id": "9587102",
     "abbr": "MC",
     "name": "Mason City"
+   },
+   "home": {
+    "id": "9587106",
+    "abbr": "WAT",
+    "name": "Waterloo"
+   },
+   "final": false
+  },
+  {
+   "id": "45800119",
+   "date": "2026-12-20",
+   "venue": "Young Arena",
+   "status": "",
+   "away": {
+    "id": "9587162",
+    "abbr": "IC",
+    "name": "Iowa City"
    },
    "home": {
     "id": "9587106",
