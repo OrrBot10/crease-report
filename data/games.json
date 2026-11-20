@@ -1,5 +1,5 @@
 {
- "scrapedAt": "2026-11-19T11:54:18.430Z",
+ "scrapedAt": "2026-11-20T11:54:24.748Z",
  "games": [
   {
    "id": "45800076",
@@ -2480,16 +2480,98 @@
    "id": "45800126",
    "date": "2026-11-19",
    "venue": "Young Arena",
-   "status": "",
+   "status": "Final",
    "away": {
     "id": "9587102",
     "abbr": "MC",
-    "name": "Mason City"
+    "name": "Mason City",
+    "score": 1
    },
    "home": {
     "id": "9587106",
     "abbr": "WAT",
-    "name": "Waterloo"
+    "name": "Waterloo",
+    "score": 7
+   },
+   "final": true,
+   "periods": [
+    "1",
+    "2",
+    "3"
+   ],
+   "ot": false,
+   "so": false,
+   "goalies": [
+    {
+     "teamId": "9587102",
+     "playerId": "79057657",
+     "name": "Alex Mckibben",
+     "number": "1",
+     "min": 51,
+     "shots": 34,
+     "ga": 7,
+     "saves": 27
+    },
+    {
+     "teamId": "9587106",
+     "playerId": "79057274",
+     "name": "Graham Verbraken",
+     "number": "92",
+     "min": 51,
+     "shots": 19,
+     "ga": 1,
+     "saves": 18
+    }
+   ]
+  },
+  {
+   "id": "45800127",
+   "date": "2026-11-20",
+   "venue": "Sidner Ice Arena",
+   "status": "",
+   "away": {
+    "id": "9587094",
+    "abbr": "BOJI",
+    "name": "Boji"
+   },
+   "home": {
+    "id": "9587099",
+    "abbr": "FRE",
+    "name": "Fremont"
+   },
+   "final": false
+  },
+  {
+   "id": "45800128",
+   "date": "2026-11-20",
+   "venue": "Coral Ridge Ice Arena",
+   "status": "",
+   "away": {
+    "id": "9587095",
+    "abbr": "CR",
+    "name": "Cedar Rapids"
+   },
+   "home": {
+    "id": "9587162",
+    "abbr": "IC",
+    "name": "Iowa City"
+   },
+   "final": false
+  },
+  {
+   "id": "45800129",
+   "date": "2026-11-20",
+   "venue": "The River's Edge",
+   "status": "",
+   "away": {
+    "id": "9587098",
+    "abbr": "DBQ",
+    "name": "Dubuque"
+   },
+   "home": {
+    "id": "9587104",
+    "abbr": "QC",
+    "name": "Quad City"
    },
    "final": false
   },
