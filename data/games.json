@@ -1,5 +1,5 @@
 {
- "scrapedAt": "2026-11-21T11:42:37.057Z",
+ "scrapedAt": "2026-11-22T06:22:17.758Z",
  "games": [
   {
    "id": "45800076",
@@ -2672,22 +2672,198 @@
    "id": "45800130",
    "date": "2026-11-21",
    "venue": "Liberty First Credit Union Arena",
-   "status": "",
+   "status": "Final",
    "away": {
     "id": "9587096",
     "abbr": "CAP",
-    "name": "DM Caps"
+    "name": "DM Caps",
+    "score": 2
    },
    "home": {
     "id": "9587103",
     "abbr": "OJL",
-    "name": "Omaha"
+    "name": "Omaha",
+    "score": 1
    },
-   "final": false
+   "final": true,
+   "periods": [
+    "1",
+    "2",
+    "3"
+   ],
+   "ot": false,
+   "so": false,
+   "goalies": [
+    {
+     "teamId": "9587096",
+     "playerId": "79057583",
+     "name": "Kenley Bouma",
+     "number": "35",
+     "min": 51,
+     "shots": 17,
+     "ga": 1,
+     "saves": 16
+    },
+    {
+     "teamId": "9587103",
+     "playerId": "79057647",
+     "name": "Izaac Seidel",
+     "number": "70",
+     "min": 51,
+     "shots": 30,
+     "ga": 2,
+     "saves": 28
+    }
+   ]
   },
   {
    "id": "45800131",
    "date": "2026-11-21",
+   "venue": "Coralville",
+   "status": "Final",
+   "away": {
+    "id": "9587093",
+    "abbr": "AMES",
+    "name": "Ames",
+    "score": 16
+   },
+   "home": {
+    "id": "9587162",
+    "abbr": "IC",
+    "name": "Iowa City",
+    "score": 0
+   },
+   "final": true,
+   "periods": [
+    "1",
+    "2",
+    "3"
+   ],
+   "ot": false,
+   "so": false,
+   "goalies": [
+    {
+     "teamId": "9587093",
+     "playerId": "79057477",
+     "name": "Parker Pittman",
+     "number": "80",
+     "min": 51,
+     "shots": 2,
+     "ga": 0,
+     "saves": 2
+    },
+    {
+     "teamId": "9587162",
+     "playerId": "79535749",
+     "name": "Christopher Surine",
+     "number": "30",
+     "min": 51,
+     "shots": 71,
+     "ga": 16,
+     "saves": 55
+    }
+   ]
+  },
+  {
+   "id": "45800132",
+   "date": "2026-11-21",
+   "venue": "Sidner Ice Arena",
+   "status": "Final",
+   "away": {
+    "id": "9587100",
+    "abbr": "KC",
+    "name": "Kansas City",
+    "score": 3
+   },
+   "home": {
+    "id": "9587099",
+    "abbr": "FRE",
+    "name": "Fremont",
+    "score": 3
+   },
+   "final": true,
+   "periods": [
+    "1",
+    "2",
+    "3",
+    "OT1"
+   ],
+   "ot": true,
+   "so": false,
+   "goalies": [
+    {
+     "teamId": "9587100",
+     "playerId": "79057317",
+     "name": "Kamden Kruggel",
+     "number": "35",
+     "min": 56,
+     "shots": 32,
+     "ga": 3,
+     "saves": 29
+    },
+    {
+     "teamId": "9587099",
+     "playerId": "79535659",
+     "name": "KC Kern",
+     "number": "38",
+     "min": 56,
+     "shots": 27,
+     "ga": 3,
+     "saves": 24
+    }
+   ]
+  },
+  {
+   "id": "45800133",
+   "date": "2026-11-21",
+   "venue": "The River's Edge",
+   "status": "Final",
+   "away": {
+    "id": "9587106",
+    "abbr": "WAT",
+    "name": "Waterloo",
+    "score": 5
+   },
+   "home": {
+    "id": "9587104",
+    "abbr": "QC",
+    "name": "Quad City",
+    "score": 2
+   },
+   "final": true,
+   "periods": [
+    "1",
+    "2",
+    "3"
+   ],
+   "ot": false,
+   "so": false,
+   "goalies": [
+    {
+     "teamId": "9587106",
+     "playerId": "79057300",
+     "name": "Lincoln Graveman",
+     "number": "34",
+     "min": 51,
+     "shots": 16,
+     "ga": 2,
+     "saves": 14
+    },
+    {
+     "teamId": "9587104",
+     "playerId": "79057521",
+     "name": "Brenden Orr",
+     "number": "64",
+     "min": 51,
+     "shots": 38,
+     "ga": 5,
+     "saves": 33
+    }
+   ]
+  },
+  {
+   "id": "45800134",
+   "date": "2026-11-22",
    "venue": "Coral Ridge Ice Arena",
    "status": "",
    "away": {
@@ -2703,8 +2879,8 @@
    "final": false
   },
   {
-   "id": "45800132",
-   "date": "2026-11-21",
+   "id": "45800135",
+   "date": "2026-11-22",
    "venue": "Sidner Ice Arena",
    "status": "",
    "away": {
@@ -2716,23 +2892,6 @@
     "id": "9587099",
     "abbr": "FRE",
     "name": "Fremont"
-   },
-   "final": false
-  },
-  {
-   "id": "45800133",
-   "date": "2026-11-21",
-   "venue": "The River's Edge",
-   "status": "",
-   "away": {
-    "id": "9587106",
-    "abbr": "WAT",
-    "name": "Waterloo"
-   },
-   "home": {
-    "id": "9587104",
-    "abbr": "QC",
-    "name": "Quad City"
    },
    "final": false
   },
