@@ -1,5 +1,5 @@
 {
- "scrapedAt": "2026-11-22T16:09:15.197Z",
+ "scrapedAt": "2026-11-22T16:13:33.633Z",
  "games": [
   {
    "id": "45800076",
@@ -4722,20 +4722,20 @@
      "playerId": "79057657",
      "name": "Alex Mckibben",
      "number": "1",
-     "min": 24.733333333333334,
-     "shots": 13,
+     "min": 17,
+     "shots": 0,
      "ga": 0,
-     "saves": 13
+     "saves": 0
     },
     {
      "teamId": "9587102",
      "playerId": "79057356",
      "name": "Jarrett Servantez",
      "number": "35",
-     "min": 26.266666666666666,
-     "shots": 22,
+     "min": 34,
+     "shots": 35,
      "ga": 6,
-     "saves": 16
+     "saves": 29
     }
    ]
   },
@@ -4900,7 +4900,7 @@
     "pp": {
      "away": [
       0,
-      2
+      3
      ],
      "home": [
       0,
@@ -4913,7 +4913,7 @@
       1
      ],
      "home": [
-      14,
+      4,
       3
      ]
     }
@@ -5770,38 +5770,34 @@
     "id": "9587099",
     "abbr": "FRE",
     "name": "Fremont",
-    "score": 4
+    "score": 3
    },
    "final": true,
    "periods": [
     "1",
     "2",
     "3",
-    "OT1",
-    "SO"
+    "OT1"
    ],
    "ot": true,
-   "so": true,
+   "so": false,
    "box": {
     "periods": [
      "1",
      "2",
      "3",
-     "OT1",
-     "SO"
+     "OT1"
     ],
     "goals": {
      "away": [
       1,
       1,
       1,
-      0,
       0
      ],
      "home": [
       0,
       2,
-      1,
       1,
       0
      ]
@@ -5834,11 +5830,11 @@
     },
     "pim": {
      "away": [
-      65,
-      14
+      35,
+      12
      ],
      "home": [
-      38,
+      18,
       7
      ]
     }
@@ -5849,7 +5845,7 @@
      "playerId": "79057317",
      "name": "Kamden Kruggel",
      "number": "35",
-     "min": 61,
+     "min": 56,
      "shots": 32,
      "ga": 3,
      "saves": 29
@@ -5859,7 +5855,7 @@
      "playerId": "79535659",
      "name": "KC Kern",
      "number": "38",
-     "min": 61,
+     "min": 56,
      "shots": 27,
      "ga": 3,
      "saves": 24
@@ -7103,17 +7099,16 @@
    "id": "45800119",
    "date": "2026-12-20",
    "venue": "Young Arena",
-   "time": "12:00 PM CST",
-   "status": "Scheduled",
+   "status": "",
    "away": {
     "id": "9587162",
     "abbr": "IC",
-    "name": "IC"
+    "name": "Iowa City"
    },
    "home": {
     "id": "9587106",
     "abbr": "WAT",
-    "name": "WAT"
+    "name": "Waterloo"
    },
    "final": false
   },
