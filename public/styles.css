@@ -429,3 +429,22 @@ table.mini td.l { white-space: normal; }
 }
 @media (min-width: 900px) { #tab-storm .charts, #tab-opp .charts { grid-template-columns: 1fr 1fr; align-items: start; } }
 @media (min-width: 641px) { #tab-storm .tiles, #tab-opp .tiles { grid-template-columns: repeat(4, 1fr); } }
+
+/* period by period */
+.period-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 10px; }
+.period-cards .tile { text-align: center; border-top: 4px solid var(--line); }
+.period-cards .tile.hi { border-top-color: var(--accent); }
+.period-cards .tile.lo { border-top-color: var(--neg); }
+.period-cards .tile .v { font-size: 28px; }
+.stack { display: grid; gap: 12px; align-content: start; }
+table.periods th, table.periods td { text-align: center; }
+table.periods th.l, table.periods td.l { text-align: left; }
+table.periods td em { display: block; font-style: normal; font-size: 11px; color: var(--muted); line-height: 1.2; }
+table.periods td.best { background: var(--accent-soft); }
+table.periods td:last-child, table.periods th:last-child { padding-right: 6px; }
+@media (max-width: 640px) {
+  .period-cards { gap: 6px; }
+  .period-cards .tile { padding: 9px 4px; }
+  .period-cards .tile .v { font-size: 22px; }
+  .period-cards .tile .l { font-size: 10.5px; letter-spacing: 0; }
+}

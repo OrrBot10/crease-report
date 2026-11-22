@@ -302,6 +302,7 @@ const boxGames = finals.map((g) => {
     box: {
       goals: b.goals, pp: b.pp, pim: b.pim,
       shots: b.shots ? { home: b.shots.home[b.shots.home.length - 1], away: b.shots.away[b.shots.away.length - 1] } : null,
+      shotsBy: b.shots ? { home: b.shots.home.slice(0, 3), away: b.shots.away.slice(0, 3) } : null,
       scoring: d.scoring.filter((x) => x.side).map((x) => ({ side: x.side, scorer: x.scorer, strength: x.strength.toLowerCase() })),
       points: d.skaters.filter((x) => x.g + x.a > 0).map((x) => ({ teamId: x.teamId, name: x.name, number: x.number, g: x.g, a: x.a })),
     },

@@ -29,7 +29,7 @@ To change the password, update both and run the workflow. Everyone then uses the
 
 ## Files
 
-- `scrape.js` – walks the season schedule day by day and parses every final box score: score, OT/SO, and each goalie's minutes, shots, and GA. It also reads the full season schedule. Skater names and scoring details go to `data/box-details.json`, which git ignores. Finished games are cached in `cache/`, so re-runs are fast.
+- `scrape.js` – walks the season schedule day by day and parses every final box score: score, OT/SO, and each goalie's minutes, shots, and GA. It also reads the full season schedule. Skater names and scoring details go to `data/box-details.json`, which git ignores. Finished games are cached in `cache/`; games from the last 21 days are re-read every run, and everything on Mondays (or with `node scrape.js --all`), because the league corrects box scores.
 - `analyze.js` – team ratings, goalie expected goals, power scores, and week-by-week snapshots. Writes `public/data.js`.
 - `config.json` – season IDs, the goalie to spotlight, and all the ranking weights. Edit it, run `npm run analyze`, then refresh.
 - `publish.js` – encrypts the data and stamps asset versions.

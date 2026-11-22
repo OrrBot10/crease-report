@@ -32,12 +32,12 @@ jobs:
 
       - run: npm ci
 
-      # Finished games never change, so keep the downloaded pages between runs.
+      # Saved pages for older games. Recent games are re-read every run (see scrape.js).
       - uses: actions/cache@v4
         with:
           path: cache
-          key: scrape-cache-${{ github.run_id }}
-          restore-keys: scrape-cache-
+          key: scrape-cache-v2-${{ github.run_id }}
+          restore-keys: scrape-cache-v2-
 
       - name: Scrape league site
         run: npm run scrape

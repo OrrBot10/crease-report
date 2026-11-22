@@ -11,8 +11,8 @@
   "focusPhotoUrl": "https://cdn2.sportngin.com/attachments/roster_player_info/0b1f-221180459/_64_Orr_large.jpg",
   "teamLogo": "img/jr-storm.png",
   "weights": {
-    "adjSave": 0.6,
-    "gsax": 0.1,
+    "adjSave": 0.55,
+    "gsax": 0.15,
     "goals": 0.15,
     "schedule": 0.15,
     "teamNet": 0.4,

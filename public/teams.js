@@ -22,7 +22,8 @@ const shortTime = (t) => (t || '').replace(/\s+[A-Z]{2,4}$/, '');
 // ---------- team stats ----------
 function teamStats(id, i) {
   const blank = () => ({ w: 0, l: 0, otl: 0 });
-  const s = { gp: 0, gf: 0, ga: 0, rgf: 0, rga: 0, sf: 0, sa: 0, ppg: 0, ppo: 0, ppga: 0, pko: 0, pim: 0, pimGames: 0, pf: [0, 0, 0], pa: [0, 0, 0],
+  const s = { gp: 0, gf: 0, ga: 0, rgf: 0, rga: 0, sf: 0, sa: 0, ppg: 0, ppo: 0, ppga: 0, pko: 0, pim: 0, pimGames: 0, pf: [0, 0, 0], pa: [0, 0, 0], psf: [0, 0, 0], psa: [0, 0, 0],
+    won: [0, 1, 2].map(() => ({ w: 0, l: 0, t: 0 })), after: [0, 1].map(() => ({ lead: blank(), tie: blank(), trail: blank() })),
     all: blank(), home: blank(), away: blank(), first: blank(), trail: blank(), oneGoal: blank(), games: [], scorers: {} };
   for (const g of D.games) {
     if (g.date > weekEnd(i) || (g.homeId !== id && g.awayId !== id)) continue;
@@ -36,7 +37,14 @@ function teamStats(id, i) {
     if (b.shots) { s.sf += b.shots[me]; s.sa += b.shots[op]; }
     if (b.pp) { if (b.pp[me]) { s.ppg += b.pp[me][0]; s.ppo += b.pp[me][1]; } if (b.pp[op]) { s.ppga += b.pp[op][0]; s.pko += b.pp[op][1]; } }
     if (b.pim && b.pim[me]) { s.pim += b.pim[me][0]; s.pimGames++; }
-    if (b.goals) for (let p = 0; p < 3; p++) { s.pf[p] += b.goals[me][p] || 0; s.pa[p] += b.goals[op][p] || 0; }
+    if (b.goals) for (let p = 0, diff = 0; p < 3; p++) {
+      const f = b.goals[me][p] || 0, a = b.goals[op][p] || 0;
+      s.pf[p] += f; s.pa[p] += a;
+      s.won[p][f > a ? 'w' : f < a ? 'l' : 't']++;
+      diff += f - a;
+      if (p < 2) s.after[p][diff > 0 ? 'lead' : diff < 0 ? 'trail' : 'tie'][res]++;
+    }
+    if (b.shotsBy) for (let p = 0; p < 3; p++) { s.psf[p] += b.shotsBy[me][p] || 0; s.psa[p] += b.shotsBy[op][p] || 0; }
     const firstGoal = b.scoring.find((x) => x.side);
     if (firstGoal) s[firstGoal.side === me ? 'first' : 'trail'][res]++;
     for (const x of b.points) if (x.teamId === id) {
@@ -64,6 +72,10 @@ function leagueMetrics(i) {
       shotShare: s.sf / (s.sf + s.sa || 1), shPct: s.rgf / (s.sf || 1), svPct: 1 - s.rga / (s.sa || 1),
       ppPct: s.ppo ? s.ppg / s.ppo : null, pkPct: s.pko ? 1 - s.ppga / s.pko : null, pimpg: s.pimGames ? s.pim / s.pimGames : null,
       p1: per(s.pf[0] - s.pa[0]), p2: per(s.pf[1] - s.pa[1]), p3: per(s.pf[2] - s.pa[2]),
+      ...Object.assign({}, ...[0, 1, 2].map((p) => ({
+        ['gf' + p]: per(s.pf[p]), ['ga' + p]: per(s.pa[p]), ['gd' + p]: per(s.pf[p] - s.pa[p]), ['sf' + p]: per(s.psf[p]), ['sa' + p]: per(s.psa[p]),
+        ['ss' + p]: s.psf[p] / (s.psf[p] + s.psa[p] || 1), ['sh' + p]: s.pf[p] / (s.psf[p] || 1), ['sv' + p]: 1 - s.pa[p] / (s.psa[p] || 1),
+      }))),
     };
   }));
 }
@@ -142,6 +154,40 @@ function periodChart(s) {
   </svg>`;
 }
 
+// Period by period: each stat with its league rank, best period marked, plus
+// how games turn out from each intermission.
+const PERIOD_ROWS = [
+  ['gf', 'Goals for', f2x, true], ['ga', 'Goals against', f2x, false], ['gd', 'Goal diff', (v) => s2(v), true],
+  ['sf', 'Shots for', f1x, true], ['sa', 'Shots against', f1x, false], ['ss', 'Share of shots', (v) => pc1(v), true],
+  ['sh', 'Shooting %', (v) => pc1(v), true], ['sv', 'Save %', (v) => pct(v), true],
+];
+function f2x(v) { return f2(v); }
+function f1x(v) { return f1(v); }
+function periodSection(rows, id) {
+  const me = rows.find((r) => r.id === id), s = me.s, P = ['1st', '2nd', '3rd'];
+  const order = [0, 1, 2].sort((a, b) => me['gd' + b] - me['gd' + a]);
+  const cell = ([key, , fmt, hi], p) => {
+    const vals = [0, 1, 2].map((q) => me[key + q]), best = hi ? Math.max(...vals) : Math.min(...vals);
+    const isBest = Math.abs(vals[p] - best) < 1e-9 && vals.some((v) => Math.abs(v - best) > 1e-9);
+    return `<td class="${isBest ? 'best' : ''} ${key === 'gd' ? sgnCls(vals[p]) : ''}"><b>${fmt(vals[p])}</b><em>${teamRank(rows, id, key + p, hi).text}</em></td>`;
+  };
+  const wl = (r) => `${r.w}-${r.l}-${r.t}`;
+  const games = (r) => r.w + r.l + r.otl;
+  const after = (p) => ['lead', 'tie', 'trail'].map((k) => `<td><b>${games(s.after[p][k]) ? rec(s.after[p][k]) : '–'}</b></td>`).join('');
+  return `<h3>Period by period</h3>
+    <div class="period-cards">${[0, 1, 2].map((p) => `<div class="tile ${p === order[0] ? 'hi' : p === order[2] ? 'lo' : ''}"><div class="l">${P[p]} period${p === order[0] ? ' · best' : p === order[2] ? ' · worst' : ''}</div>
+      <div class="v">${s.pf[p]}–${s.pa[p]}</div><div class="r">${s2(me['gd' + p])} a game<br>${teamRank(rows, id, 'gd' + p, true).text} of ${rows.length}</div></div>`).join('')}</div>
+    <p class="note">Season goals for–against in each period. Best and worst are by goal difference.</p>
+    <div class="charts">
+      ${card('Every stat by period', 'Per game, with league rank. Shaded is their best period for that stat.', `<table class="mini periods"><thead><tr><th class="l"></th>${P.map((x) => `<th>${x}</th>`).join('')}</tr></thead><tbody>
+        ${PERIOD_ROWS.map((r) => `<tr><td class="l">${r[1]}</td>${[0, 1, 2].map((p) => cell(r, p)).join('')}</tr>`).join('')}
+        <tr><td class="l">Periods W-L-T</td>${[0, 1, 2].map((p) => `<td><b>${wl(s.won[p])}</b></td>`).join('')}</tr></tbody></table>`)}
+      <div class="stack">${card('Goals by period', 'Per game.', periodChart(s))}
+      ${card('Record from each intermission', 'Final record (W-L-OTL) when leading, tied, or trailing.', `<table class="mini periods"><thead><tr><th class="l"></th><th>Leading</th><th>Tied</th><th>Trailing</th></tr></thead><tbody>
+        <tr><td class="l">After the 1st</td>${after(0)}</tr><tr><td class="l">After the 2nd</td>${after(1)}</tr></tbody></table>`)}</div>
+    </div>`;
+}
+
 function scorersTable(s, n) {
   const list = Object.values(s.scorers).filter((p) => p.g + p.a > 0).sort((a, b) => b.g + b.a - (a.g + a.a) || b.g - a.g).slice(0, n);
   if (!list.length) return '<p class="empty">No points recorded yet.</p>';
@@ -209,14 +255,13 @@ function renderStorm() {
       ${good.length ? `<p><b>Top third of the league:</b> ${listOr(good)}.</p>` : ''}
       ${bad.length ? `<p><b>Bottom third:</b> ${listOr(bad)}.</p>` : ''}
       <p><b>Scoring first:</b> ${rec(s.first)} when they score first, ${rec(s.trail)} when they don't.</p>
-      <p><b>By period:</b> ${periodLine(s)}.</p>
       <p><b>Schedule:</b> ${teamRank(rows, team.id, 'sos', true).text} toughest of ${rows.length} so far. Opponents have won ${pct(t.oppPtsPct)} of their other games.</p>
     </div>
+    ${periodSection(rows, team.id)}
     <h3>Where the Storm stand vs the league</h3>
     ${leagueStrips(rows, [{ id: team.id, cls: 'us' }], METRICS.map((m) => m[0]))}
     <div class="charts">
       ${card('Power rank by week', 'Up is better. Tap or hover a point for details.', rankLine(team.history.slice(0, i + 1), D.teams.length))}
-      ${card('Goals by period', 'Per game.', periodChart(s))}
       ${card('Top scorers', '', scorersTable(s, 10))}
       ${card('Results', 'Newest first. Shots are for-against.', resultsTable(s.games, rankOf))}
     </div>

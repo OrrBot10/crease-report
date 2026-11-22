@@ -1,5 +1,5 @@
 {
- "scrapedAt": "2026-11-22T16:17:00.626Z",
+ "scrapedAt": "2026-11-22T16:20:56.333Z",
  "games": [
   {
    "id": "45800076",
@@ -3797,10 +3797,20 @@
      "playerId": "79057356",
      "name": "Jarrett Servantez",
      "number": "35",
-     "min": 51,
-     "shots": 27,
-     "ga": 10,
-     "saves": 17
+     "min": 43.15,
+     "shots": 21,
+     "ga": 8,
+     "saves": 13
+    },
+    {
+     "teamId": "9587102",
+     "playerId": "79057538",
+     "name": "Garret Willemsen",
+     "number": "72",
+     "min": 7.85,
+     "shots": 6,
+     "ga": 2,
+     "saves": 4
     }
    ]
   },
@@ -4722,20 +4732,20 @@
      "playerId": "79057657",
      "name": "Alex Mckibben",
      "number": "1",
-     "min": 17,
-     "shots": 0,
+     "min": 24.733333333333334,
+     "shots": 13,
      "ga": 0,
-     "saves": 0
+     "saves": 13
     },
     {
      "teamId": "9587102",
      "playerId": "79057356",
      "name": "Jarrett Servantez",
      "number": "35",
-     "min": 34,
-     "shots": 35,
+     "min": 26.266666666666666,
+     "shots": 22,
      "ga": 6,
-     "saves": 29
+     "saves": 16
     }
    ]
   },
@@ -4900,7 +4910,7 @@
     "pp": {
      "away": [
       0,
-      3
+      2
      ],
      "home": [
       0,
@@ -4913,7 +4923,7 @@
       1
      ],
      "home": [
-      4,
+      14,
       3
      ]
     }
@@ -5770,34 +5780,38 @@
     "id": "9587099",
     "abbr": "FRE",
     "name": "Fremont",
-    "score": 3
+    "score": 4
    },
    "final": true,
    "periods": [
     "1",
     "2",
     "3",
-    "OT1"
+    "OT1",
+    "SO"
    ],
    "ot": true,
-   "so": false,
+   "so": true,
    "box": {
     "periods": [
      "1",
      "2",
      "3",
-     "OT1"
+     "OT1",
+     "SO"
     ],
     "goals": {
      "away": [
       1,
       1,
       1,
+      0,
       0
      ],
      "home": [
       0,
       2,
+      1,
       1,
       0
      ]
@@ -5830,11 +5844,11 @@
     },
     "pim": {
      "away": [
-      35,
-      12
+      65,
+      14
      ],
      "home": [
-      18,
+      38,
       7
      ]
     }
@@ -5845,7 +5859,7 @@
      "playerId": "79057317",
      "name": "Kamden Kruggel",
      "number": "35",
-     "min": 56,
+     "min": 61,
      "shots": 32,
      "ga": 3,
      "saves": 29
@@ -5855,7 +5869,7 @@
      "playerId": "79535659",
      "name": "KC Kern",
      "number": "38",
-     "min": 56,
+     "min": 61,
      "shots": 27,
      "ga": 3,
      "saves": 24
@@ -5967,7 +5981,7 @@
    "id": "45800134",
    "date": "2026-11-22",
    "venue": "Coral Ridge Ice Arena",
-   "status": "",
+   "status": "In Progress",
    "away": {
     "id": "9587093",
     "abbr": "AMES",
@@ -7099,16 +7113,17 @@
    "id": "45800119",
    "date": "2026-12-20",
    "venue": "Young Arena",
-   "status": "",
+   "time": "12:00 PM CST",
+   "status": "Scheduled",
    "away": {
     "id": "9587162",
     "abbr": "IC",
-    "name": "Iowa City"
+    "name": "IC"
    },
    "home": {
     "id": "9587106",
     "abbr": "WAT",
-    "name": "Waterloo"
+    "name": "WAT"
    },
    "final": false
   },

@@ -1,6 +1,7 @@
 // Scrapes every varsity game of the season from the MWHSL SportsEngine site
-// into data/games.json. Finished games are cached in cache/ so re-runs only
-// fetch new days and new results.
+// into data/games.json. Finished games are cached in cache/, but the league
+// corrects box scores after the fact, so recent games are re-read every run and
+// the whole season is re-read on Mondays.
 const fs = require('fs');
 const path = require('path');
 const cheerio = require('cheerio');
@@ -151,6 +152,8 @@ function parseGame(id, html) {
 
   away.score = num($('.game-header-center .scores .away').text());
   home.score = num($('.game-header-center .scores .home').text());
+  // This league has no ties, so a tied "final" is still waiting on its shootout result.
+  if (home.score === away.score) { game.final = false; game.status = 'Awaiting result'; return game; }
 
   // Line score columns past the 3rd period mean OT / shootout.
   const periods = $('table.line_score_v2').first().find('thead th')
@@ -189,7 +192,33 @@ function parseGame(id, html) {
   return game;
 }
 
+const RECHECK_DAYS = 21;
+const isFinal = (g) => g.final && g.goalies.length > 0;
+
+// One game, preferring a fresh copy while corrections are likely. If the site
+// fails or returns something that isn't the finished game, keep the saved copy.
+async function loadGame(id, recheckAll) {
+  const file = path.join(CACHE, `game-${id}.html`);
+  const saved = fs.existsSync(file) ? parseGame(id, fs.readFileSync(file, 'utf8')) : null;
+  if (saved && isFinal(saved) && !recheckAll && (Date.now() - new Date(saved.date + 'T12:00:00Z')) / 864e5 > RECHECK_DAYS) return saved;
+  let html;
+  try {
+    html = await get(`${BASE}/game/show/${id}?subseason=${config.subseason}`, null);
+  } catch (e) {
+    if (saved && isFinal(saved)) { console.warn(`Keeping saved copy of game ${id}: ${e.message}`); return saved; }
+    throw e;
+  }
+  const game = parseGame(id, html);
+  if (isFinal(game)) {
+    if (saved && isFinal(saved) && JSON.stringify(saved) !== JSON.stringify(game)) console.log(`Game ${id} (${game.away.abbr} at ${game.home.abbr}, ${game.date}) was corrected on the league site.`);
+    fs.writeFileSync(file, html);
+    return game;
+  }
+  return saved && isFinal(saved) ? saved : game;
+}
+
 async function main() {
+  const recheckAll = new Date().getUTCDay() === 1 || process.argv.includes('--all');
   const gameDays = (await seasonGameDays()).filter((d) => d >= config.seasonStart && d <= config.seasonEnd);
   if (!gameDays.length) throw new Error('No game days found on the schedule page. Has the site layout changed?');
   const cutoff = isoDate(new Date(Date.now() + 864e5));
@@ -207,14 +236,7 @@ async function main() {
   const list = [...ids];
   for (let i = 0; i < list.length; i += 6) {
     const batch = await Promise.all(
-      list.slice(i, i + 6).map(async (id) => {
-        const file = path.join(CACHE, `game-${id}.html`);
-        const html = await get(`${BASE}/game/show/${id}?subseason=${config.subseason}`, file);
-        const game = parseGame(id, html);
-        // Only cache finished games with goalie lines; others may still change.
-        if (game.final && game.goalies.length && !fs.existsSync(file)) fs.writeFileSync(file, html);
-        return game;
-      })
+      list.slice(i, i + 6).map((id) => loadGame(id, recheckAll))
     );
     games.push(...batch);
   }
