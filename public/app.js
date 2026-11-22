@@ -118,6 +118,7 @@ const gCols = [
   ['gp', 'GP', 'Games played'], ['rec', 'W-L-OTL', 'Decisions'], ['svPct', 'SV%', 'Raw save percentage'],
   ['adjSvPct', 'Adj SV%', 'Save % if every opponent finished its shots like an average team'],
   ['gsax', 'GSAx', 'Goals saved above expected: goals an average goalie would allow on these shots from these opponents, minus actual goals allowed'],
+  ['gsaxPerGame', 'GSAx /GP', 'Goals saved above expected per 51 minutes. The power score uses this rate, so playing more games is not an advantage'],
   ['gaa', 'GAA', 'Goals against per 51 minutes'], ['workloadGaa', 'Wkld GAA', 'GAA if the goalie faced a league-average number of shots. Takes the defense in front of the goalie out of GAA'], ['shotsPerGame', 'Shots/GP', 'Shots faced per 51 minutes'],
   ['oppStrength', 'Opp Str', 'Strength of the teams faced: half their scoring, half their team power score (including quality of wins). 50 = average opponent'],
   ['score', 'Power score', '50 = average ranked goalie; 10 points = one standard deviation'],
@@ -146,13 +147,13 @@ function gameLog(apps) {
       <td>${pct(a.svPct)}</td><td>${f1(a.xga)}</td><td class="${sgnCls(a.gsax)}">${signed(a.gsax)}</td></tr>`).join('')}
     </tbody></table>`;
 }
-const gSortOptions = [['rank', 'Power rank'], ['svPct', 'Save %'], ['adjSvPct', 'Adjusted save %'], ['gsax', 'Goals saved above exp.'], ['gaa', 'GAA'], ['workloadGaa', 'GAA at avg workload'], ['shotsPerGame', 'Shots faced / game'], ['oppStrength', 'Opponent strength']];
+const gSortOptions = [['rank', 'Power rank'], ['svPct', 'Save %'], ['adjSvPct', 'Adjusted save %'], ['gsax', 'Goals saved above exp.'], ['gsaxPerGame', 'Saved above exp. / game'], ['gaa', 'GAA'], ['workloadGaa', 'GAA at avg workload'], ['shotsPerGame', 'Shots faced / game'], ['oppStrength', 'Opponent strength']];
 const gLowFirst = ['rank', 'gaa', 'workloadGaa', 'name', 'team'];
 function goalieCards(rows, i) {
   return `<div class="mob m-list" id="gcards">${rows.map((r) => `<div class="m-card m-tap ${r.key === D.focusKey ? 'focus' : ''} ${state.open.has(r.key) ? 'open' : ''}" data-key="${esc(r.key)}">
     <div class="m-top"><span class="rank">${r.rank}</span>${movement(r.rank, r.prevRank)}<div class="m-name"><b>${esc(r.name)}</b><span>${esc(r.team)} · ${r.rec}</span></div><div class="m-score"><b>${f1(r.score)}</b><span>score</span></div><span class="m-chev" aria-hidden="true"></span></div>
     <div class="m-stats">${mStat(pct(r.svPct), 'SV%')}${mStat(pct(r.adjSvPct), 'Adj SV%')}${mStat(signed(r.gsax), 'GSAx', sgnCls(r.gsax))}${mStat(f1(r.shotsPerGame), 'Shots/GP')}</div>
-    ${state.open.has(r.key) ? `<div class="m-more"><div class="m-stats">${mStat(f2(r.gaa), 'GAA')}${mStat(f2(r.workloadGaa), 'Wkld GAA')}${mStat(f1(r.oppStrength), 'Opp Str')}${mStat(r.rec, 'W-L-OTL')}</div>${mobileGameLog(appsFor(r.key, i))}</div>` : ''}
+    ${state.open.has(r.key) ? `<div class="m-more"><div class="m-stats">${mStat(f2(r.gaa), 'GAA')}${mStat(f2(r.workloadGaa), 'Wkld GAA')}${mStat(f1(r.oppStrength), 'Opp Str')}${mStat(signed(r.gsaxPerGame, 2), 'GSAx/GP', sgnCls(r.gsaxPerGame))}</div>${mobileGameLog(appsFor(r.key, i))}</div>` : ''}
   </div>`).join('')}</div>`;
 }
 function renderGoalies() {
@@ -163,7 +164,7 @@ function renderGoalies() {
   $('#tab-goalies').innerHTML = `
     <h2>Goalie power rankings · through ${weekLabel(D.weeks[i])}</h2>
     <p class="note mob">Mostly adjusted save %, plus goals saved above expected, workload-adjusted GAA, and schedule strength. Tap a goalie (▾) for their game log.</p>
-    <p class="note desk">Ranked mostly on save % adjusted for the shooters faced, plus goals saved above expected, goals allowed versus what each opponent usually scores, and schedule strength. <span class="desk">Click a goalie for their game log; click a header to sort.</span></p>
+    <p class="note desk">Ranked mostly on save % adjusted for the shooters faced, plus goals saved above expected, workload-adjusted GAA, and schedule strength. <span class="desk">Click a goalie for their game log; click a header to sort.</span></p>
     ${sortSelect('gsort', gSortOptions, state.sortG)}
     ${goalieCards(rows, i)}
     <div class="tbl-wrap desk"><table id="gt"><thead><tr>${gCols.map(([k, l, t]) => `<th class="${['name', 'team'].includes(k) ? 'l ' : ''}${k !== 'mv' ? 'sortable' : ''} ${state.sortG.k === k ? 'sorted' : ''}" data-k="${k}" ${t ? `data-tip="${esc(t)}"` : ''}>${l}${state.sortG.k === k ? (state.sortG.dir > 0 ? ' ↑' : ' ↓') : ''}</th>`).join('')}</tr></thead>
@@ -172,7 +173,7 @@ function renderGoalies() {
       const open = state.open.has(r.key);
       return `<tr class="row ${r.key === D.focusKey ? 'focus' : ''}" data-key="${esc(r.key)}">
         <td class="rank">${r.rank}</td><td>${movement(r.rank, r.prevRank)}</td><td class="l name">${esc(r.name)}</td><td class="l team" title="${esc(r.teamName)}">${esc(r.team)}</td>
-        <td>${r.gp}</td><td>${r.rec}</td><td>${pct(r.svPct)}</td><td>${pct(r.adjSvPct)}</td><td class="${sgnCls(r.gsax)}">${signed(r.gsax)}</td>
+        <td>${r.gp}</td><td>${r.rec}</td><td>${pct(r.svPct)}</td><td>${pct(r.adjSvPct)}</td><td class="${sgnCls(r.gsax)}">${signed(r.gsax)}</td><td class="${sgnCls(r.gsaxPerGame)}">${signed(r.gsaxPerGame, 2)}</td>
         <td>${f2(r.gaa)}</td><td>${f2(r.workloadGaa)}</td><td>${f1(r.shotsPerGame)}</td><td>${f1(r.oppStrength)}</td>
         <td class="score-cell"><span class="bar" style="width:${w.toFixed(0)}px"></span>${f1(r.score)}</td></tr>
         ${open ? `<tr class="detail"><td colspan="${gCols.length}">${gameLog(appsFor(r.key, i))}</td></tr>` : ''}`;
@@ -226,10 +227,11 @@ function renderWeekend() {
     ${state.week === D.weeks.length - 1 && D.upcoming.length ? `<h3>Coming up</h3><div class="scores">${upcomingGames().map((g) => `<div class="score"><div class="d">${md(g.date)}</div><div>${esc(g.away)} @ ${esc(g.home)}</div></div>`).join('')}</div>` : ''}`;
 }
 function upcomingGames() {
-  const next = D.upcoming[0] && D.upcoming[0].date;
+  const games = upcomingFrom();
+  const next = games[0] && games[0].date;
   if (!next) return [];
   const limit = new Date(new Date(next + 'T12:00:00Z').getTime() + 3 * 864e5).toISOString().slice(0, 10);
-  return D.upcoming.filter((g) => g.date <= limit);
+  return games.filter((g) => g.date <= limit);
 }
 
 // ---------- teams ----------
@@ -284,10 +286,10 @@ function renderTeams() {
 // ---------- focus goalie ----------
 // Charts draw in a narrower coordinate space on phones so their text stays legible.
 const chartWidth = () => (phoneQuery.matches ? 360 : 520);
-function rankLine(values, i) {
+function rankLine(values, total) {
   // Single-series line of power rank by week, rank 1 at top.
   const W = chartWidth(), H = 200, L = 34, R = 14, T = 14, B = 28;
-  const n = values.length, maxRank = Math.max(...D.snapshots.map((s) => s.goalies.length));
+  const n = values.length, maxRank = total || Math.max(...D.snapshots.map((s) => s.goalies.length));
   const pad = 16; // keep the first and last points clear of the axis labels
   const x = (j) => L + pad + (n === 1 ? (W - L - R - 2 * pad) / 2 : (j * (W - L - R - 2 * pad)) / (n - 1));
   const y = (r) => T + ((r - 1) * (H - T - B)) / (maxRank - 1 || 1);
@@ -368,7 +370,7 @@ function renderFocus() {
   const lgShots = D.league.shotsPerGame;
   const best = apps.slice().sort((a, b) => b.gsax - a.gsax)[0];
   const teamRow = teamById[focus.teamId];
-  const next = D.upcoming.filter((g) => g.home === focus.teamAbbr || g.away === focus.teamAbbr).slice(0, 4);
+  const next = upcomingFor(focus.teamId).slice(0, 4);
   const tiles = [
     ['Power rank', s ? `#${s.rank}` : '–', `of ${snap.goalies.length} ranked`],
     ['Save %', pct(s && s.svPct), rk('svPct')],
@@ -429,7 +431,7 @@ function renderHow() {
     <h3>3. Goalie power score</h3>
     <ul>
       <li><b>${p(w.adjSave)}: adjusted save %</b>, pulled toward league average by ${D.config.goaliePriorShots} shots of ballast so a goalie with 2 games can't top the list on luck.</li>
-      <li><b>${p(w.gsax)}: total GSAx</b>, which rewards doing it over a big workload.</li>
+      <li><b>${p(w.gsax)}: GSAx per game</b>, pulled toward zero by ${D.config.gsaxPriorGames} games of ballast. It's a rate rather than a season total, so a goalie doesn't climb just by playing more.</li>
       <li><b>${p(w.goals)}: goals against, adjusted for workload.</b> Raw GAA mostly reflects the defense: a goalie facing 45 shots a night will give up more than one facing 15. So GAA is restated as if every goalie faced the league-average ${f1(D.league.shotsPerGame)} shots a game ("Wkld GAA"). Unlike adjusted save %, this one doesn't adjust for opponent quality.</li>
       <li><b>${p(w.schedule)}: schedule strength</b>, the average strength of the teams faced. Each opponent counts ${p(w.oppOffense)} for how well it scores and ${p(1 - w.oppOffense)} for its team power score (including quality of wins).</li>
     </ul>
@@ -437,6 +439,9 @@ function renderHow() {
     <h3>4. Weekly movement</h3>
     <p>Early in the season nobody knows yet which teams are truly good, so nothing is locked in. Every update re-rates <b>every game played so far</b> using the latest team ratings. If an opponent from October turns out to be strong, every goalie who faced them gets more credit for that game, retroactively: their expected goals, adjusted save %, GSAx, and schedule strength all shift.</p>
     <p>The "Rankings as of" picker shows the rankings as they stood at the end of each week (using what was known then), and the ▲▼ arrows compare against the previous week. Game logs, the weekend tab, and opponent ranks always use the latest ratings.</p>
+    <h3>Jr Storm and Next Opponent tabs</h3>
+    <p>Team stats are added up from every box score. Each strip shows all ${D.teams.length} teams from worst (left) to best (right). The Storm tab follows the "Rankings as of" picker; the opponent tab opens on whoever the Storm play next and always uses the latest numbers.</p>
+    <p>Projected goals and shots combine one team's offense rating with the other's defense rating. They ignore home ice, lineups, and who starts in goal, so treat them as a rough estimate.</p>
     <h3>Tuning it</h3>
     <p>All the weights and ballast amounts are in <code>config.json</code>. Change them, then run <code>npm run analyze</code> and refresh.</p>
     <h3>Limits</h3>
@@ -455,7 +460,7 @@ function setTab(t) {
 document.querySelector('.tabs').onclick = (e) => { const b = e.target.closest('button'); if (b) setTab(b.dataset.tab); };
 
 function render() {
-  renderSpotlight(); renderGoalies(); renderWeekend(); renderTeams(); renderFocus(); renderHow();
+  renderSpotlight(); renderGoalies(); renderWeekend(); renderTeams(); renderFocus(); renderStorm(); renderOpponent(); renderHow();
 }
 renderHeader();
 render();

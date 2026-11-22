@@ -34,10 +34,40 @@ function isoDate(d) {
   return d.toISOString().slice(0, 10);
 }
 
+function dayUrl(date) {
+  const [y, m, d] = date.split('-').map(Number);
+  return `${BASE}/schedule/day/league_instance/${config.leagueInstance}/${y}/${m}/${d}?subseason=${config.subseason}`;
+}
+
+// Every game day of the season, from the calendar links on a schedule page.
+async function seasonGameDays() {
+  const html = await get(dayUrl(isoDate(new Date())), null);
+  const days = new Set();
+  for (const m of html.matchAll(new RegExp(`league_instance/${config.leagueInstance}/(\\d+)/(\\d+)/(\\d+)`, 'g')))
+    days.add(`${m[1]}-${m[2].padStart(2, '0')}-${m[3].padStart(2, '0')}`);
+  return [...days].sort();
+}
+
+// Games not played yet, straight from a schedule day page (no need to open each game).
+async function scheduledGames(date) {
+  const $ = cheerio.load(await get(dayUrl(date), null));
+  const games = [];
+  $('tr').has('a[href*="game/show"]').each((i, tr) => {
+    const teams = $(tr).find('a.teamName');
+    if (teams.length < 2) return;
+    const link = $(tr).find('a[href*="game/show"]').first();
+    const team = (a) => ({ id: teamIdFromHref($(a).attr('href')), abbr: $(a).text().trim(), name: $(a).text().trim() });
+    games.push({
+      id: /game\/show\/(\d+)/.exec(link.attr('href'))[1], date, venue: $(tr).find('.scheduleListTeam').eq(2).text().trim(),
+      time: link.text().trim(), status: 'Scheduled', away: team(teams[0]), home: team(teams[1]), final: false,
+    });
+  });
+  return games;
+}
+
 // Game IDs listed on one schedule day page.
 async function gameIdsForDay(date) {
-  const [y, m, d] = date.split('-').map(Number);
-  const url = `${BASE}/schedule/day/league_instance/${config.leagueInstance}/${y}/${m}/${d}?subseason=${config.subseason}`;
+  const url = dayUrl(date);
   // Days more than 3 days old won't change, so cache them.
   const old = (Date.now() - new Date(date + 'T12:00:00Z')) / 864e5 > 3;
   const file = path.join(CACHE, `day-${date}.html`);
@@ -61,6 +91,46 @@ function minutes(s) {
 function teamIdFromHref(href) {
   const m = /page\/show\/(\d+)/.exec(href || '');
   return m ? m[1] : null;
+}
+
+// Team totals, skater points and the goal list from a finished box score.
+// "away"/"home" follow the header order, which every box table shares.
+function parseBox($, away, home, periods) {
+  const table = (label) => $('table.line_score_v2').filter((i, t) => $(t).find('thead th').first().text().trim() === label).first();
+  const rows = (label) => table(label).find('tbody tr').map((i, tr) => [$(tr).find('td').slice(1).map((j, td) => $(td).text().trim()).get()]).get();
+  const pair = (label, f) => { const r = rows(label); return r.length === 2 ? { away: f(r[0]), home: f(r[1]) } : null; };
+  const nums = (r) => r.map(num);
+  const ints = (re) => (r) => { const m = re.exec(r[0] || ''); return m ? [Number(m[1]), Number(m[2])] : null; };
+  const box = {
+    periods,
+    goals: pair('SCORING', (r) => nums(r).slice(0, -1)),
+    shots: pair('SHOTS', (r) => nums(r)), // by period, then total
+    pp: pair('POWER PLAYS', ints(/(\d+)\s+for\s+(\d+)/)), // [goals, chances]
+    pim: pair('PENALTIES', ints(/(\d+)\s+minutes\s+on\s+(\d+)/)), // [minutes, infractions]
+    scoring: [], skaters: [],
+  };
+  let period = '';
+  $('ul.scoring_summary').first().children('li').each((i, li) => {
+    if ($(li).hasClass('interval_row')) { period = $(li).find('span').first().text().trim(); return; }
+    if (!$(li).hasClass('scoring_info')) return;
+    const team = $(li).find('.team_name').text().trim();
+    const details = $(li).find('.play_details');
+    const names = details.find('.playerLink').map((j, a) => $(a).text().trim()).get();
+    box.scoring.push({
+      period, clock: $(li).find('.game_clock').text().trim(), side: team === away.name ? 'away' : team === home.name ? 'home' : null,
+      scorer: names[0] || null, strength: (/\((even strength|power play|short handed|empty net|penalty shot)\)/i.exec(details.text()) || [])[1] || '',
+    });
+  });
+  $('h3.teamHeadline').each((i, h3) => {
+    if (!/Skaters$/i.test($(h3).text().trim())) return;
+    const teamId = teamIdFromHref($(h3).find('a').attr('href'));
+    $(h3).nextAll('table').first().find('tbody tr').each((j, tr) => {
+      const td = $(tr).find('td');
+      if (td.length < 7) return;
+      box.skaters.push({ teamId, name: $(td[1]).text().trim().replace(/\s+/g, ' '), number: $(td[0]).text().trim(), g: num($(td[2]).text()), a: num($(td[3]).text()), pim: num($(td[6]).text()) });
+    });
+  });
+  return box;
 }
 
 function parseGame(id, html) {
@@ -91,6 +161,8 @@ function parseGame(id, html) {
   game.ot = periods.some((p) => /OT/i.test(p) || /^\d+$/.test(p) && Number(p) > 3);
   game.so = periods.some((p) => /SO/i.test(p)) || /SO|shootout/i.test(status);
 
+  game.box = parseBox($, away, home, periods);
+
   game.goalies = [];
   $('h3.teamHeadline').each((i, h3) => {
     const title = $(h3).text().trim();
@@ -118,12 +190,12 @@ function parseGame(id, html) {
 }
 
 async function main() {
-  const start = new Date(config.seasonStart + 'T12:00:00Z');
-  const end = new Date(Math.min(new Date(config.seasonEnd + 'T12:00:00Z'), Date.now() + 864e5));
-  const days = [];
-  for (let d = start; d <= end; d = new Date(d.getTime() + 864e5)) days.push(isoDate(d));
+  const gameDays = (await seasonGameDays()).filter((d) => d >= config.seasonStart && d <= config.seasonEnd);
+  if (!gameDays.length) throw new Error('No game days found on the schedule page. Has the site layout changed?');
+  const cutoff = isoDate(new Date(Date.now() + 864e5));
+  const days = gameDays.filter((d) => d <= cutoff), future = gameDays.filter((d) => d > cutoff);
 
-  console.log(`Scanning ${days.length} schedule days...`);
+  console.log(`Scanning ${days.length} played days and ${future.length} upcoming days...`);
   const ids = new Set();
   for (let i = 0; i < days.length; i += 6) {
     const batch = await Promise.all(days.slice(i, i + 6).map(gameIdsForDay));
@@ -146,7 +218,17 @@ async function main() {
     );
     games.push(...batch);
   }
+  const seen = new Set(games.map((g) => g.id));
+  for (let i = 0; i < future.length; i += 6) {
+    const batch = await Promise.all(future.slice(i, i + 6).map(scheduledGames));
+    for (const g of batch.flat()) if (!seen.has(g.id)) { seen.add(g.id); games.push(g); }
+  }
   games.sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+  // Skater names and goal scorers go in a git-ignored file: the site's data is
+  // encrypted, but games.json sits in a public repo.
+  const details = {};
+  for (const g of games) if (g.box) { details[g.id] = { scoring: g.box.scoring, skaters: g.box.skaters }; delete g.box.scoring; delete g.box.skaters; }
+  fs.writeFileSync(path.join(DATA, 'box-details.json'), JSON.stringify(details));
   const finals = games.filter((g) => g.final);
   fs.writeFileSync(path.join(DATA, 'games.json'), JSON.stringify({ scrapedAt: new Date().toISOString(), games }, null, 1));
   console.log(`Saved ${games.length} games (${finals.length} final) to data/games.json`);

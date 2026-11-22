@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Crease Report</title>
   <link rel="icon" href="img/jr-storm.png">
-  <link rel="stylesheet" href="styles.css?v=de1361969b">
+  <link rel="stylesheet" href="styles.css?v=0cc9ec996f">
 </head>
 <body class="locked">
   <header class="top">
@@ -41,6 +41,8 @@
       <button data-tab="weekend" data-full="Weekend" data-short="Weekend">Weekend</button>
       <button data-tab="teams" data-full="League Power Rankings" data-short="League">League Power Rankings</button>
       <button data-tab="focus" id="focusTab" data-full="Spotlight" data-short="Spotlight">Spotlight</button>
+      <button data-tab="storm" data-full="Jr Storm" data-short="Storm">Jr Storm</button>
+      <button data-tab="opp" data-full="Next Opponent" data-short="Next">Next Opponent</button>
       <button data-tab="how" data-full="How it works" data-short="How">How it works</button>
     </nav>
 
@@ -48,13 +50,16 @@
     <section id="tab-weekend" class="tab" hidden></section>
     <section id="tab-teams" class="tab" hidden></section>
     <section id="tab-focus" class="tab" hidden></section>
+    <section id="tab-storm" class="tab" hidden></section>
+    <section id="tab-opp" class="tab" hidden></section>
     <section id="tab-how" class="tab" hidden></section>
 
     <footer id="foot"></footer>
   </main>
   <div id="tip" class="tip" hidden></div>
 
-  <script src="data.js?v=de1361969b"></script>
-  <script src="gate.js?v=de1361969b" id="gate-script"></script>
+  <script src="data.js?v=0cc9ec996f"></script>
+  <script src="teams.js?v=0cc9ec996f"></script>
+  <script src="gate.js?v=0cc9ec996f" id="gate-script"></script>
 </body>
 </html>

@@ -56,9 +56,12 @@ async function photoDataUrl(config) {
   return 'data:image/jpeg;base64,' + fs.readFileSync(file).toString('base64');
 }
 
+// Five decimals is plenty for display and keeps the download small on phones.
+const round = (k, v) => (typeof v === 'number' && !Number.isInteger(v) ? Number(v.toFixed(5)) : v);
+
 async function publish(out) {
   out.config = { ...out.config, focusPhoto: await photoDataUrl(out.config) };
-  const enc = encrypt(Buffer.from(JSON.stringify(out), 'utf8'), sitePassword());
+  const enc = encrypt(Buffer.from(JSON.stringify(out, round), 'utf8'), sitePassword());
   fs.mkdirSync(path.join(__dirname, 'public'), { recursive: true });
   fs.writeFileSync(path.join(__dirname, 'public', 'data.js'), 'window.ENC = ' + JSON.stringify(enc) + ';\n');
   stampVersion();
@@ -70,7 +73,7 @@ async function publish(out) {
 function stampVersion() {
   const pub = path.join(__dirname, 'public');
   const hash = crypto.createHash('sha256');
-  for (const f of ['styles.css', 'app.js', 'gate.js', 'data.js']) hash.update(fs.readFileSync(path.join(pub, f)));
+  for (const f of ['styles.css', 'teams.js', 'app.js', 'gate.js', 'data.js']) hash.update(fs.readFileSync(path.join(pub, f)));
   const v = hash.digest('hex').slice(0, 10);
   const index = path.join(pub, 'index.html');
   fs.writeFileSync(index, fs.readFileSync(index, 'utf8').replace(/\?v=[\w-]+/g, '?v=' + v));

@@ -8,6 +8,9 @@ const REG_MIN = 51; // MWHSL regulation: three 17-minute periods
 
 const { games: allGames, scrapedAt } = require('./data/games.json');
 const finals = allGames.filter((g) => g.final && g.goalies.length);
+// Goal scorers and skater points (git-ignored; written by scrape.js).
+const detailFile = path.join(__dirname, 'data', 'box-details.json');
+const details = fs.existsSync(detailFile) ? JSON.parse(fs.readFileSync(detailFile, 'utf8')) : {};
 
 // ---------- helpers ----------
 const sum = (a, f = (x) => x) => a.reduce((s, x) => s + f(x), 0);
@@ -209,6 +212,10 @@ function analyze(games) {
       gaa: min ? (ga / min) * REG_MIN : null,
       shotsPerGame: gpEq ? shots / gpEq : 0,
       xga, gsax: xga - ga,
+      gsaxPerGame: gpEq ? (xga - ga) / gpEq : 0,
+      // Per-game rate used for ranking, pulled toward zero until there are enough
+      // games. A total would mostly reward playing more.
+      ratingGsax: (xga - ga) / (gpEq + config.gsaxPriorGames),
       adjSvPct: shots ? 1 - lgSh * (ga / (xga || 1)) : null, // save % if every opponent finished like an average team
       ratingSv: 1 - lgSh * gk[k], // shrunk version used for ranking
       // GAA if the goalie faced a league-average number of shots: separates the
@@ -227,7 +234,7 @@ function analyze(games) {
   const q = goalies.filter((g) => g.qualified);
   const comp = {
     sv: zscores(q.map((g) => g.ratingSv)),
-    gsax: zscores(q.map((g) => g.gsax)),
+    gsax: zscores(q.map((g) => g.ratingGsax)),
     gp: zscores(q.map((g) => -g.ratingWorkloadGaa)),
     sos: zscores(q.map((g) => g.oppStrength)),
   };
@@ -283,21 +290,38 @@ const last = rest.join(' ').toLowerCase();
 const focus = current.goalies.find((g) => g.name.toLowerCase().endsWith(' ' + last) && g.teamAbbr === config.focusTeam)
   || current.goalies.find((g) => g.name.toLowerCase().endsWith(' ' + last));
 
-const schedule = allGames.filter((g) => !g.final).map((g) => ({ date: g.date, away: g.away.abbr, home: g.home.abbr }));
+// The schedule page abbreviates some teams differently, so label by team id.
+const abbrOf = (t) => (teams[t.id] ? teams[t.id].abbr : t.abbr);
+const schedule = allGames.filter((g) => !g.final).map((g) => ({ date: g.date, time: g.time || '', venue: g.venue, awayId: g.away.id, homeId: g.home.id, away: abbrOf(g.away), home: abbrOf(g.home) }));
+
+// Compact box scores for the team pages.
+const boxGames = finals.map((g) => {
+  const b = g.box || {}, d = details[g.id] || { scoring: [], skaters: [] };
+  return {
+    id: g.id, date: g.date, homeId: g.home.id, awayId: g.away.id, score: { home: g.home.score, away: g.away.score }, ot: g.ot, so: g.so,
+    box: {
+      goals: b.goals, pp: b.pp, pim: b.pim,
+      shots: b.shots ? { home: b.shots.home[b.shots.home.length - 1], away: b.shots.away[b.shots.away.length - 1] } : null,
+      scoring: d.scoring.filter((x) => x.side).map((x) => ({ side: x.side, scorer: x.scorer, strength: x.strength.toLowerCase() })),
+      points: d.skaters.filter((x) => x.g + x.a > 0).map((x) => ({ teamId: x.teamId, name: x.name, number: x.number, g: x.g, a: x.a })),
+    },
+  };
+});
 
 const out = {
   generatedAt: new Date().toISOString(), scrapedAt, season: config.season, weights: W, config,
   league: current.lg, weeks, weekly,
   // Full rankings as they stood after each week, for the "as of" picker.
   snapshots: snapshots.map((s) => ({
-    goalies: s.goalies.filter((g) => g.rank).map((g) => ({ key: g.key, rank: g.rank, score: g.score, gp: g.gp, min: g.min, svPct: g.svPct, adjSvPct: g.adjSvPct, gsax: g.gsax, gaa: g.gaa, workloadGaa: g.workloadGaa, shotsPerGame: g.shotsPerGame, oppOffense: g.oppOffense, oppStrength: g.oppStrength, w: g.w, l: g.l, otl: g.otl })),
-    teams: s.teams.map((t) => ({ id: t.id, rank: t.rank, score: t.score, w: t.w, l: t.l, otl: t.otl, gp: t.gp, pts: t.pts, ptsPct: t.ptsPct, gf: t.gf, ga: t.ga, offRating: t.offRating, defRating: t.defRating, net: t.net, sos: t.sos, sf: t.sf, sa: t.sa, krach: t.krach, oppPtsPct: t.oppPtsPct, vsTop: t.vsTop, topN: t.topN, bestWin: t.bestWin, threat: t.threat })),
+    goalies: s.goalies.filter((g) => g.rank).map((g) => ({ key: g.key, rank: g.rank, score: g.score, gp: g.gp, min: g.min, svPct: g.svPct, adjSvPct: g.adjSvPct, gsax: g.gsax, gsaxPerGame: g.gsaxPerGame, gaa: g.gaa, workloadGaa: g.workloadGaa, shotsPerGame: g.shotsPerGame, oppOffense: g.oppOffense, oppStrength: g.oppStrength, w: g.w, l: g.l, otl: g.otl })),
+    teams: s.teams.map((t) => ({ id: t.id, rank: t.rank, score: t.score, w: t.w, l: t.l, otl: t.otl, gp: t.gp, pts: t.pts, ptsPct: t.ptsPct, gf: t.gf, ga: t.ga, offRating: t.offRating, defRating: t.defRating, net: t.net, sos: t.sos, sf: t.sf, sa: t.sa, krach: t.krach, oppPtsPct: t.oppPtsPct, vsTop: t.vsTop, topN: t.topN, bestWin: t.bestWin, threat: t.threat, shotsForRating: t.shotsForRating, shotsAgainstRating: t.shotsAgainstRating })),
   })),
   teams: current.teams.map((t) => ({ ...t, history: teamHistory[t.id] })),
   goalies: current.goalies.map((g) => ({ ...g, history: goalieHistory[g.key] || [] })),
   apps: current.apps,
   focusKey: focus ? focus.key : null,
   upcoming: schedule,
+  games: boxGames,
 };
 require('./publish')(out).then(() => {
   console.log(`Analyzed ${finals.length} games over ${weeks.length} weeks: ${out.teams.length} teams, ${out.goalies.filter((g) => g.rank).length} ranked goalies.`);

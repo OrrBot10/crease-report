@@ -361,3 +361,71 @@ body.locked main, body.locked .picker { display: none; }
   .m-card.open .m-chev::after { transform: rotate(-135deg); top: 7px; }
   .m-sort { margin-bottom: 8px; }
 }
+
+/* ---------- team pages ---------- */
+.hero .crest { height: 104px; background: #fff; border-radius: 10px; padding: 8px 10px; }
+.hero .bigrank.side { margin: 0; text-align: center; min-width: 84px; }
+.hero .bigrank.side small { display: block; margin: 4px 0 0; }
+.hero .meta b { color: #fff; }
+.hero .venue { opacity: 0.75; }
+.hero .mv { width: auto; }
+.hero .mv.up { color: #4cc27a; }
+.hero .mv.down { color: #f08a5d; }
+.opp-pick { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; font-size: 14px; font-weight: 600; color: var(--text-2); }
+.opp-pick select { font-size: 16px; font-weight: 600; padding: 8px 10px; min-width: 240px; }
+#tab-opp .story { margin-bottom: 14px; }
+
+.strips { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px 6px; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 4px 36px; }
+.strip-key { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--text-2); padding-bottom: 6px; border-bottom: 1px solid var(--line); margin-bottom: 4px; }
+.strip-key span { display: inline-flex; align-items: center; gap: 6px; }
+.strip-key .dirs { margin-left: auto; color: var(--muted); }
+.strip { padding: 6px 0 8px; }
+.strip-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 13px; }
+.strip-top .lab { color: var(--text-2); }
+.strip-top.two { display: grid; grid-template-columns: 1fr auto 1fr; }
+.strip-top.two .lab { text-align: center; }
+.strip-top.two .val:last-child { text-align: right; }
+.strip-top .val { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.strip-top .val em { font-style: normal; font-size: 12px; color: var(--muted); }
+.track { position: relative; height: 16px; margin: 4px 8px 0; }
+.track::before { content: ""; position: absolute; left: -8px; right: -8px; top: 7px; height: 2px; background: var(--line); border-radius: 1px; }
+i.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--muted); opacity: 0.5; }
+i.dot.us, i.dot.them { width: 13px; height: 13px; opacity: 1; }
+i.dot.us { background: var(--accent); }
+i.dot.them { background: var(--neg); border-radius: 3px; }
+i.avg { display: inline-block; width: 2px; height: 14px; background: var(--text-2); }
+.track i { position: absolute; top: 8px; transform: translate(-50%, -50%); }
+.track i.dot { box-shadow: 0 0 0 2px var(--surface); }
+/* a hit area bigger than the dot, for fingers */
+.track i.dot::after { content: ""; position: absolute; inset: -6px; }
+
+table.mini { font-size: 13px; margin-top: 6px; }
+table.mini th, table.mini td { padding: 6px 6px; }
+table.mini th { position: static; background: none; font-size: 11px; }
+table.mini th:first-child, table.mini td:first-child { padding-left: 0; }
+table.mini th:last-child, table.mini td:last-child { padding-right: 0; }
+.legend { display: flex; gap: 16px; font-size: 12px; color: var(--text-2); margin-bottom: 4px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 10px; height: 10px; border-radius: 2px; }
+.chart .empty { padding: 8px 0; }
+
+@media (max-width: 640px) {
+  /* seven tabs: size each to its label so they all fit */
+  .tabs { display: flex; justify-content: space-between; padding: 0 4px; }
+  .tabs button { flex: 1 1 auto; padding: 10px 3px 9px; font-size: 12.5px; }
+  .hero .crest { height: 72px; padding: 5px 7px; }
+  .opp-pick select { flex: 1; min-width: 0; }
+  .strips { grid-template-columns: 1fr; padding: 10px 12px 4px; }
+  .strip-key .dirs { margin-left: 0; }
+  .chart { padding: 12px; overflow-x: auto; }
+}
+/* let player names wrap so these tables never scroll sideways on a phone */
+table.mini td.l { white-space: normal; }
+@media (max-width: 640px) {
+  #tab-storm .hero, #tab-opp .hero { flex-wrap: nowrap; }
+  #tab-storm .hero .crest { height: auto; width: 92px; }
+  .hero .bigrank.side { min-width: 62px; }
+  .hero .meta { font-size: 13.5px; }
+}
+@media (min-width: 900px) { #tab-storm .charts, #tab-opp .charts { grid-template-columns: 1fr 1fr; align-items: start; } }
+@media (min-width: 641px) { #tab-storm .tiles, #tab-opp .tiles { grid-template-columns: repeat(4, 1fr); } }
