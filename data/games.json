@@ -1,5 +1,5 @@
 {
- "scrapedAt": "2026-11-22T16:22:04.269Z",
+ "scrapedAt": "2026-11-23T06:37:46.892Z",
  "games": [
   {
    "id": "45800076",
@@ -5980,52 +5980,219 @@
   {
    "id": "45800134",
    "date": "2026-11-22",
-   "venue": "Coral Ridge Ice Arena",
-   "status": "In Progress",
+   "venue": "Coralville",
+   "status": "Final",
    "away": {
     "id": "9587093",
     "abbr": "AMES",
-    "name": "Ames"
+    "name": "Ames",
+    "score": 16
    },
    "home": {
     "id": "9587162",
     "abbr": "IC",
-    "name": "Iowa City"
+    "name": "Iowa City",
+    "score": 0
    },
-   "final": false
+   "final": true,
+   "periods": [
+    "1",
+    "2",
+    "3"
+   ],
+   "ot": false,
+   "so": false,
+   "box": {
+    "periods": [
+     "1",
+     "2",
+     "3"
+    ],
+    "goals": {
+     "away": [
+      7,
+      3,
+      6
+     ],
+     "home": [
+      0,
+      0,
+      0
+     ]
+    },
+    "shots": {
+     "away": [
+      26,
+      16,
+      23,
+      65
+     ],
+     "home": [
+      4,
+      3,
+      0,
+      7
+     ]
+    },
+    "pp": {
+     "away": [
+      0,
+      0
+     ],
+     "home": [
+      0,
+      3
+     ]
+    },
+    "pim": {
+     "away": [
+      6,
+      3
+     ],
+     "home": [
+      0,
+      0
+     ]
+    }
+   },
+   "goalies": [
+    {
+     "teamId": "9587093",
+     "playerId": "79496227",
+     "name": "Jace Hamilton",
+     "number": "35",
+     "min": 51,
+     "shots": 7,
+     "ga": 0,
+     "saves": 7
+    },
+    {
+     "teamId": "9587162",
+     "playerId": "79535749",
+     "name": "Christopher Surine",
+     "number": "30",
+     "min": 51,
+     "shots": 65,
+     "ga": 16,
+     "saves": 49
+    }
+   ]
   },
   {
    "id": "45800135",
    "date": "2026-11-22",
    "venue": "Sidner Ice Arena",
-   "status": "",
+   "status": "Final",
    "away": {
     "id": "9587100",
     "abbr": "KC",
-    "name": "Kansas City"
+    "name": "Kansas City",
+    "score": 2
    },
    "home": {
     "id": "9587099",
     "abbr": "FRE",
-    "name": "Fremont"
+    "name": "Fremont",
+    "score": 5
    },
-   "final": false
+   "final": true,
+   "periods": [
+    "1",
+    "2",
+    "3"
+   ],
+   "ot": false,
+   "so": false,
+   "box": {
+    "periods": [
+     "1",
+     "2",
+     "3"
+    ],
+    "goals": {
+     "away": [
+      0,
+      2,
+      0
+     ],
+     "home": [
+      0,
+      1,
+      4
+     ]
+    },
+    "shots": {
+     "away": [
+      8,
+      15,
+      8,
+      31
+     ],
+     "home": [
+      7,
+      18,
+      13,
+      38
+     ]
+    },
+    "pp": {
+     "away": [
+      0,
+      3
+     ],
+     "home": [
+      0,
+      6
+     ]
+    },
+    "pim": {
+     "away": [
+      16,
+      8
+     ],
+     "home": [
+      8,
+      4
+     ]
+    }
+   },
+   "goalies": [
+    {
+     "teamId": "9587100",
+     "playerId": "79057317",
+     "name": "Kamden Kruggel",
+     "number": "35",
+     "min": 51,
+     "shots": 38,
+     "ga": 5,
+     "saves": 33
+    },
+    {
+     "teamId": "9587099",
+     "playerId": "79057210",
+     "name": "Carter Casey",
+     "number": "37",
+     "min": 51,
+     "shots": 31,
+     "ga": 2,
+     "saves": 29
+    }
+   ]
   },
   {
    "id": "45800136",
    "date": "2026-11-24",
    "venue": "Liberty First Credit Union Arena",
-   "time": "7:00 PM CST",
-   "status": "Scheduled",
+   "status": "",
    "away": {
     "id": "9587101",
     "abbr": "LIN",
-    "name": "LIN"
+    "name": "Lincoln"
    },
    "home": {
     "id": "9587103",
     "abbr": "OJL",
-    "name": "OJL"
+    "name": "Omaha"
    },
    "final": false
   },
@@ -6033,17 +6200,16 @@
    "id": "45800137",
    "date": "2026-11-24",
    "venue": "RecPlex (Rink 1)",
-   "time": "7:30 PM CST",
-   "status": "Scheduled",
+   "status": "",
    "away": {
     "id": "9587096",
-    "abbr": "DM CAP",
-    "name": "DM CAP"
+    "abbr": "CAP",
+    "name": "DM Caps"
    },
    "home": {
     "id": "9587097",
-    "abbr": "DM OAK",
-    "name": "DM OAK"
+    "abbr": "OAKS",
+    "name": "DM Oak Leafs"
    },
    "final": false
   },
