@@ -1,5 +1,5 @@
 {
- "scrapedAt": "2026-11-23T11:52:12.240Z",
+ "scrapedAt": "2026-11-24T11:54:57.370Z",
  "games": [
   {
    "id": "45800076",
@@ -5526,13 +5526,13 @@
      ],
      "home": [
       0,
-      4
+      5
      ]
     },
     "pim": {
      "away": [
-      16,
-      4
+      33,
+      7
      ],
      "home": [
       8,
@@ -6217,17 +6217,16 @@
    "id": "45800138",
    "date": "2026-11-25",
    "venue": "Mason City Arena",
-   "time": "8:00 PM CST",
-   "status": "Scheduled",
+   "status": "",
    "away": {
     "id": "9587093",
     "abbr": "AMES",
-    "name": "AMES"
+    "name": "Ames"
    },
    "home": {
     "id": "9587102",
     "abbr": "MC",
-    "name": "MC"
+    "name": "Mason City"
    },
    "final": false
   },
