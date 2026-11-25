@@ -1,5 +1,5 @@
 {
- "scrapedAt": "2026-11-24T11:54:57.370Z",
+ "scrapedAt": "2026-11-25T11:57:45.106Z",
  "games": [
   {
    "id": "45800076",
@@ -6183,35 +6183,203 @@
    "id": "45800136",
    "date": "2026-11-24",
    "venue": "Liberty First Credit Union Arena",
-   "status": "",
+   "status": "Final",
    "away": {
     "id": "9587101",
     "abbr": "LIN",
-    "name": "Lincoln"
+    "name": "Lincoln",
+    "score": 1
    },
    "home": {
     "id": "9587103",
     "abbr": "OJL",
-    "name": "Omaha"
+    "name": "Omaha",
+    "score": 5
    },
-   "final": false
+   "final": true,
+   "periods": [
+    "1",
+    "2",
+    "3"
+   ],
+   "ot": false,
+   "so": false,
+   "box": {
+    "periods": [
+     "1",
+     "2",
+     "3"
+    ],
+    "goals": {
+     "away": [
+      0,
+      0,
+      1
+     ],
+     "home": [
+      3,
+      0,
+      2
+     ]
+    },
+    "shots": {
+     "away": [
+      4,
+      5,
+      6,
+      15
+     ],
+     "home": [
+      16,
+      11,
+      16,
+      43
+     ]
+    },
+    "pp": {
+     "away": [
+      0,
+      1
+     ],
+     "home": [
+      0,
+      5
+     ]
+    },
+    "pim": {
+     "away": [
+      20,
+      6
+     ],
+     "home": [
+      2,
+      1
+     ]
+    }
+   },
+   "goalies": [
+    {
+     "teamId": "9587101",
+     "playerId": "79057373",
+     "name": "Matthew Travis",
+     "number": "1",
+     "min": 51,
+     "shots": 43,
+     "ga": 5,
+     "saves": 38
+    },
+    {
+     "teamId": "9587103",
+     "playerId": "79538910",
+     "name": "Dario Marez",
+     "number": "68",
+     "min": 51,
+     "shots": 15,
+     "ga": 1,
+     "saves": 14
+    }
+   ]
   },
   {
    "id": "45800137",
    "date": "2026-11-24",
    "venue": "RecPlex (Rink 1)",
-   "status": "",
+   "status": "Final",
    "away": {
     "id": "9587096",
     "abbr": "CAP",
-    "name": "DM Caps"
+    "name": "DM Caps",
+    "score": 1
    },
    "home": {
     "id": "9587097",
     "abbr": "OAKS",
-    "name": "DM Oak Leafs"
+    "name": "DM Oak Leafs",
+    "score": 3
    },
-   "final": false
+   "final": true,
+   "periods": [
+    "1",
+    "2",
+    "3"
+   ],
+   "ot": false,
+   "so": false,
+   "box": {
+    "periods": [
+     "1",
+     "2",
+     "3"
+    ],
+    "goals": {
+     "away": [
+      0,
+      0,
+      1
+     ],
+     "home": [
+      0,
+      2,
+      1
+     ]
+    },
+    "shots": {
+     "away": [
+      6,
+      10,
+      10,
+      26
+     ],
+     "home": [
+      6,
+      8,
+      3,
+      17
+     ]
+    },
+    "pp": {
+     "away": [
+      0,
+      1
+     ],
+     "home": [
+      1,
+      2
+     ]
+    },
+    "pim": {
+     "away": [
+      4,
+      2
+     ],
+     "home": [
+      2,
+      2
+     ]
+    }
+   },
+   "goalies": [
+    {
+     "teamId": "9587096",
+     "playerId": "79057594",
+     "name": "Tighe Samms",
+     "number": "30",
+     "min": 51,
+     "shots": 17,
+     "ga": 3,
+     "saves": 14
+    },
+    {
+     "teamId": "9587097",
+     "playerId": "79057555",
+     "name": "Zachary Lunders",
+     "number": "30",
+     "min": 51,
+     "shots": 26,
+     "ga": 1,
+     "saves": 25
+    }
+   ]
   },
   {
    "id": "45800138",
