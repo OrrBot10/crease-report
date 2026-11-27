@@ -1,5 +1,5 @@
 {
- "scrapedAt": "2026-11-26T11:56:15.591Z",
+ "scrapedAt": "2026-11-27T11:54:15.005Z",
  "games": [
   {
    "id": "45800076",
@@ -6537,17 +6537,16 @@
    "id": "45800142",
    "date": "2026-11-28",
    "venue": "RecPlex (Rink 2)",
-   "time": "12:00 PM CST",
-   "status": "Scheduled",
+   "status": "",
    "away": {
     "id": "9587105",
     "abbr": "SC",
-    "name": "SC"
+    "name": "Sioux City"
    },
    "home": {
     "id": "9587096",
-    "abbr": "DM CAP",
-    "name": "DM CAP"
+    "abbr": "CAP",
+    "name": "DM Caps"
    },
    "final": false
   },
@@ -6555,17 +6554,16 @@
    "id": "45800143",
    "date": "2026-11-28",
    "venue": "ImOn Ice",
-   "time": "2:00 PM CST",
-   "status": "Scheduled",
+   "status": "",
    "away": {
     "id": "9587097",
-    "abbr": "DM OAK",
-    "name": "DM OAK"
+    "abbr": "OAKS",
+    "name": "DM Oak Leafs"
    },
    "home": {
     "id": "9587095",
     "abbr": "CR",
-    "name": "CR"
+    "name": "Cedar Rapids"
    },
    "final": false
   },
@@ -6573,17 +6571,16 @@
    "id": "45800144",
    "date": "2026-11-28",
    "venue": "Dubuque Ice Arena",
-   "time": "2:00 PM CST",
-   "status": "Scheduled",
+   "status": "",
    "away": {
     "id": "9587094",
     "abbr": "BOJI",
-    "name": "BOJI"
+    "name": "Boji"
    },
    "home": {
     "id": "9587098",
     "abbr": "DBQ",
-    "name": "DBQ"
+    "name": "Dubuque"
    },
    "final": false
   },
@@ -6591,17 +6588,16 @@
    "id": "45800145",
    "date": "2026-11-28",
    "venue": "Kansas City Ice Center and Pavilion",
-   "time": "5:00 PM CST",
-   "status": "Scheduled",
+   "status": "",
    "away": {
     "id": "9587162",
     "abbr": "IC",
-    "name": "IC"
+    "name": "Iowa City"
    },
    "home": {
     "id": "9587100",
     "abbr": "KC",
-    "name": "KC"
+    "name": "Kansas City"
    },
    "final": false
   },
@@ -6609,17 +6605,16 @@
    "id": "45800146",
    "date": "2026-11-28",
    "venue": "Ice Box",
-   "time": "5:00 PM CST",
-   "status": "Scheduled",
+   "status": "",
    "away": {
     "id": "9587106",
     "abbr": "WAT",
-    "name": "WAT"
+    "name": "Waterloo"
    },
    "home": {
     "id": "9587101",
     "abbr": "LIN",
-    "name": "LIN"
+    "name": "Lincoln"
    },
    "final": false
   },
@@ -6627,17 +6622,16 @@
    "id": "45800147",
    "date": "2026-11-28",
    "venue": "The River's Edge",
-   "time": "7:00 PM CST",
-   "status": "Scheduled",
+   "status": "",
    "away": {
     "id": "9587103",
     "abbr": "OJL",
-    "name": "OJL"
+    "name": "Omaha"
    },
    "home": {
     "id": "9587104",
     "abbr": "QC",
-    "name": "QC"
+    "name": "Quad City"
    },
    "final": false
   },
@@ -6645,17 +6639,16 @@
    "id": "45800148",
    "date": "2026-11-28",
    "venue": "Ames/ISU Ice Arena",
-   "time": "8:00 PM CST",
-   "status": "Scheduled",
+   "status": "",
    "away": {
     "id": "9587102",
     "abbr": "MC",
-    "name": "MC"
+    "name": "Mason City"
    },
    "home": {
     "id": "9587093",
     "abbr": "AMES",
-    "name": "AMES"
+    "name": "Ames"
    },
    "final": false
   },
